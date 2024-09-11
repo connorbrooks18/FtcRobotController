@@ -1,9 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+
 public class Robot {
+
+    static BNO055IMU imu;
+    static Orientation angles;
+
 
     static DcMotor rf;
     static DcMotor rb;
@@ -14,8 +26,8 @@ public class Robot {
     static DcMotor REncoder = rf;
     static DcMotor MEncoder = rb;
 
-    int[] startEncoderValue = {};
-    int[] currentEncoderValue = {};
+    static int[] startEncoderValue = {};
+    static int[] currentEncoderValue = {};
 
 
     public static void initMotors(OpMode opmode){
@@ -31,6 +43,42 @@ public class Robot {
         }
 
     }
+
+    public static void initIMU(OpMode opMode){
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        opMode.telemetry.addData("Status", "IMU Initialized");
+        opMode.telemetry.update();
+
+
+
+
+
+    }
+
+    public static double getANGLE(OpMode opMode, String axis) {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        switch (axis.toUpperCase()) {
+            case "X":
+                return angles.secondAngle;
+            case "Y":
+                return angles.thirdAngle;
+            case "Z":
+                return angles.firstAngle;
+            default:
+                opMode.telemetry.addData("Error", "Invalid axis specified");
+                opMode.telemetry.update();
+                return 0.0;
+        }
+    }
+
 
     public static void drive(double rfPower, double rbPower, double lbPower, double lfPower){
 
@@ -61,10 +109,15 @@ public class Robot {
         return (11873.736) * inches;
     }
 
-    public static void forward(double inches, double power){
+    public static void forward(LinearOpMode opMode, double inches, double power){
 
 
-
+        while(  ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < inches && opMode.opModeIsActive() ) {
+            double inchesLeft = inches - distanceForward(startEncoderValue, getEncoderPositions());
+            double percentLeft = inchesLeft/inches;
+            power = Math.pow(percentLeft, .25);
+            drive(power, power, power, power);
+        }
 
 
     }
