@@ -30,21 +30,21 @@ public class Robot {
     static int[] currentEncoderValue = {};
 
 
-    public static void initMotors(OpMode opmode){
+    public static void initMotors(OpMode opmode) {
         rf = opmode.hardwareMap.get(DcMotor.class, "rf");
         rb = opmode.hardwareMap.get(DcMotor.class, "rb");
         lb = opmode.hardwareMap.get(DcMotor.class, "lb");
         lf = opmode.hardwareMap.get(DcMotor.class, "lf");
 
         DcMotor[] motors = {rf, rb, lb, lf};
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++) {
             motors[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motors[i].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
     }
 
-    public static void initIMU(OpMode opMode){
+    public static void initIMU(OpMode opMode) {
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -56,9 +56,6 @@ public class Robot {
 
         opMode.telemetry.addData("Status", "IMU Initialized");
         opMode.telemetry.update();
-
-
-
 
 
     }
@@ -80,7 +77,7 @@ public class Robot {
     }
 
 
-    public static void drive(double rfPower, double rbPower, double lbPower, double lfPower){
+    public static void drive(double rfPower, double rbPower, double lbPower, double lfPower) {
 
         rf.setPower(rfPower);
         rb.setPower(rbPower);
@@ -90,44 +87,54 @@ public class Robot {
 
     }
 
-    public static int[] getEncoderPositions(){
+    public static int[] getEncoderPositions() {
 
-        return new int[] {LEncoder.getCurrentPosition(), MEncoder.getCurrentPosition(), REncoder.getCurrentPosition()};
-
-    }
-
-    public static double distanceForward(int[] prevEncoderValue, int[] curEncoderValue){
-
-        return (((prevEncoderValue[0] + prevEncoderValue[2])/2.0) - ((curEncoderValue[0] + curEncoderValue[2])/2.0));
+        return new int[]{LEncoder.getCurrentPosition(), MEncoder.getCurrentPosition(), REncoder.getCurrentPosition()};
 
     }
 
-    public static double ticksToInches(double ticks){
-        return ticks/11873.736;
+    public static double distanceForward(int[] prevEncoderValue, int[] curEncoderValue) {
+
+        return (((prevEncoderValue[0] + prevEncoderValue[2]) / 2.0) - ((curEncoderValue[0] + curEncoderValue[2]) / 2.0));
+
     }
-    public static double inchesToTicks(double inches){
+
+    public static double ticksToInches(double ticks) {
+        return ticks / 11873.736;
+    }
+
+    public static double inchesToTicks(double inches) {
         return (11873.736) * inches;
     }
 
-    public static void forward(LinearOpMode opMode, double inches, double power){
-
-
-        while(  ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < inches && opMode.opModeIsActive() ) {
+    public static void forward(LinearOpMode opMode, double inches, double power) {
+        while (ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < inches && opMode.opModeIsActive()) {
             double inchesLeft = inches - distanceForward(startEncoderValue, getEncoderPositions());
-            double percentLeft = inchesLeft/inches;
+            double percentLeft = inchesLeft / inches;
             power = Math.pow(percentLeft, .25);
             drive(power, power, power, power);
         }
 
-
     }
 
+    public static void gotoDistance(LinearOpMode opMode, double distanceGone, double power, double porportion) {
+        while (ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < distanceGone && opMode.opModeIsActive()) {
 
-
-
-
-
-
-
-
+            double distanceToGo = distanceGone - distanceForward(startEncoderValue, getEncoderPositions());
+            power = distanceToGo * porportion;
+            drive(power, power, power, power);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
