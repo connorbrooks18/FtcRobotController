@@ -1,18 +1,22 @@
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.Robot;
 
+import static org.firstinspires.ftc.teamcode.Robot.*;
+import static org.firstinspires.ftc.teamcode.AutonomousDrive.*;
 
+@Autonomous (name="test 48in.")
 public class ExampleAuto extends LinearOpMode {
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot.initMotors(this);
+        initAUTO(this);
+
         waitForStart();
 
 
-        Robot.forward(this, 10, 1.0);
+        ad.gotoDistanceV(this, 48);
 
 
     }

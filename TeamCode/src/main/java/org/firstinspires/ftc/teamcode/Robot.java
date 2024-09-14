@@ -10,11 +10,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import org.firstinspires.ftc.teamcode.Control;
+
 
 public class Robot {
 
-    static BNO055IMU imu;
-    static Orientation angles;
 
 
     static DcMotor rf;
@@ -22,12 +22,11 @@ public class Robot {
     static DcMotor lb;
     static DcMotor lf;
 
-    static DcMotor LEncoder = lf;
-    static DcMotor REncoder = rf;
-    static DcMotor MEncoder = rb;
 
-    static int[] startEncoderValue = {};
-    static int[] currentEncoderValue = {};
+    static double gear = 1;
+
+    static AutonomousDrive ad;
+    static IMUControl imu;
 
 
     public static void initMotors(OpMode opmode) {
@@ -44,37 +43,20 @@ public class Robot {
 
     }
 
-    public static void initIMU(OpMode opMode) {
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.loggingEnabled = false;
 
-        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+    public static void initAUTO(OpMode opMode){
 
-        opMode.telemetry.addData("Status", "IMU Initialized");
-        opMode.telemetry.update();
+        initMotors(opMode);
+        imu = new IMUControl(opMode);
+
+        ad = new AutonomousDrive(lb, rb, rf);
 
 
     }
 
-    public static double getANGLE(OpMode opMode, String axis) {
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        switch (axis.toUpperCase()) {
-            case "X":
-                return angles.secondAngle;
-            case "Y":
-                return angles.thirdAngle;
-            case "Z":
-                return angles.firstAngle;
-            default:
-                opMode.telemetry.addData("Error", "Invalid axis specified");
-                opMode.telemetry.update();
-                return 0.0;
-        }
-    }
+
+
 
 
     public static void drive(double rfPower, double rbPower, double lbPower, double lfPower) {
@@ -87,44 +69,93 @@ public class Robot {
 
     }
 
-    public static int[] getEncoderPositions() {
 
-        return new int[]{LEncoder.getCurrentPosition(), MEncoder.getCurrentPosition(), REncoder.getCurrentPosition()};
 
+    public static double updateGear(Control c){
+
+        double slow = .5;
+        double fast = 1;
+        if(c.options && !c.prevOptions){
+            gear = (gear == slow) ? fast : slow;
+        }
+        return gear;
     }
 
-    public static double distanceForward(int[] prevEncoderValue, int[] curEncoderValue) {
 
-        return (((prevEncoderValue[0] + prevEncoderValue[2]) / 2.0) - ((curEncoderValue[0] + curEncoderValue[2]) / 2.0));
+    public static double[] rcDriving(Control c){
 
-    }
+        updateGear(c);
 
-    public static double ticksToInches(double ticks) {
-        return ticks / 11873.736;
-    }
+        double v1 = 0;
+        double v2 = 0;
+        double v3 = 0;
+        double v4 = 0;
 
-    public static double inchesToTicks(double inches) {
-        return (11873.736) * inches;
-    }
+        double sp = .25;
 
-    public static void forward(LinearOpMode opMode, double inches, double power) {
-        while (ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < inches && opMode.opModeIsActive()) {
-            double inchesLeft = inches - distanceForward(startEncoderValue, getEncoderPositions());
-            double percentLeft = inchesLeft / inches;
-            power = Math.pow(percentLeft, .25);
-            drive(power, power, power, power);
+
+        if (Math.abs(c.LStickX) > 0.05 || Math.abs(c.LStickY) > 0.05 || Math.abs(c.RStickX) > 0.05) {
+
+
+            double r = Math.hypot(c.LStickX, c.LStickY) * gear;
+            double robotAngle = Math.atan2(-c.LStickY, c.LStickX) - Math.PI / 4;
+
+            v1 = r * Math.cos(robotAngle) + c.RStickX; //lf // wsa cos
+            v2 = r * Math.sin(robotAngle) - c.RStickX; //rf // was sin
+            v3 = r * Math.sin(robotAngle) + c.RStickX; //lb // was sin
+            v4 = r * Math.cos(robotAngle) - c.RStickX; //rb // was cos
+
+
         }
 
-    }
+        else if (c.LTrigger1 > .25) {
+            v1 = -sp;
+            v2 = sp;
+            v3 = sp;
+            v4 = -sp;
 
-    public static void gotoDistance(LinearOpMode opMode, double distanceGone, double power, double porportion) {
-        while (ticksToInches(distanceForward(startEncoderValue, getEncoderPositions())) < distanceGone && opMode.opModeIsActive()) {
-
-            double distanceToGo = distanceGone - distanceForward(startEncoderValue, getEncoderPositions());
-            power = distanceToGo * porportion;
-            drive(power, power, power, power);
+        } else if (c.RTrigger1 > .25){
+            v1 = sp;
+            v2 = -sp;
+            v3 = -sp;
+            v4 = sp;
+        } else if(c.dpadUp1){
+            v1 = sp;
+            v2 = sp;
+            v3 = sp;
+            v4 = sp;
+        } else if(c.dpadRight1){
+            v1 = sp;
+            v2 = -sp;
+            v3 = -sp;
+            v4 = sp;
+        } else if(c.dpadDown1){
+            v1 = -sp;
+            v2 = -sp;
+            v3 = -sp;
+            v4  = -sp;
+        } else if(c.dpadLeft1){
+            v1 = -sp;
+            v2 = sp;
+            v3 = sp;
+            v4 = -sp;
         }
+        else {
+            v1 = 0;
+            v2 = 0;
+            v3 = 0;
+            v4 = 0;
+        }
+
+        drive(v1, v2, v3, v4);
+        return new double[] {v1, v2, v3, v4};
+
+
+
     }
+
+
+
 }
 
 

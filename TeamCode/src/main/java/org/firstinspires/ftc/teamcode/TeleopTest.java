@@ -2,24 +2,36 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.Robot;
+import static org.firstinspires.ftc.teamcode.Robot.*;
 
 public class TeleopTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Robot.initMotors(this);
-        Robot.initIMU(this);
+        initMotors(this);
+        initAUTO(this);
+        Control c = new Control(this);
 
         waitForStart();
         while(opModeIsActive()){
+            c.update();
+
+            rcDriving(c);
 
 
 
-            telemetry.addData("X: ", Robot.getANGLE(this, "X"));
-            telemetry.addData("Y: ", Robot.getANGLE(this, "Y"));
-            telemetry.addData("Z: ", Robot.getANGLE(this, "Z"));
+
+
+            int[] encoderValues = ad.getEncoderPositions();
+            telemetry.addData("LEncoder: ", encoderValues[0]);
+            telemetry.addData("MEncoder: ", encoderValues[1]);
+            telemetry.addData("REncoder: ", encoderValues[2]);
+
+
+            telemetry.addData("X: ", imu.getANGLE(this, "X"));
+            telemetry.addData("Y: ", imu.getANGLE(this, "Y"));
+            telemetry.addData("Z: ", imu.getANGLE(this, "Z"));
 
 
             telemetry.update();
