@@ -48,28 +48,38 @@ public class AutonomousDrive {
 
 
 
-    public void gotoDistanceV(LinearOpMode opMode, double distanceTotal) {
+    public void forward(LinearOpMode opMode, double distanceTotal) {
         startEncoderValue = this.getEncoderPositions();
         distanceTotal = inchesToTicks(distanceTotal);
         while (ticksToInches(distanceForward(startEncoderValue, this.getEncoderPositions())) < distanceTotal && opMode.opModeIsActive()) {
 
             double distanceToGo = distanceTotal - distanceForward(startEncoderValue, this.getEncoderPositions());
-            double power = distanceToGo * 1.0;
+            double power = distanceToGo * 0.50;
             Robot.drive(power, power, power, power);
         }
     }
-    public void gotoDistanceH(LinearOpMode opMode, double distanceTotal){
+    public void strafe(LinearOpMode opMode, double distanceTotal){
         startEncoderValue = this.getEncoderPositions();
-        distanceTotal = inchesToTicks(distanceTotal);
+        //distanceTotal = inchesToTicks(distanceTotal);
         while (ticksToInches(distanceSide(startEncoderValue, this.getEncoderPositions())) < distanceTotal && opMode.opModeIsActive()) {
 
-            double distanceToGo = distanceTotal - distanceSide(startEncoderValue, this.getEncoderPositions());
-            double power = distanceToGo * 1.0;
+            double distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, this.getEncoderPositions()));
+            double power = Math.sqrt(distanceToGo/14.0);
             Robot.drive(-power, power, -power, power);
         }
 
-
-
-
     }
+    public void turnDegrees(LinearOpMode opMode, double degrees, IMUControl imu){
+        double currentHeading = imu.getHeading();
+        double startHeading = currentHeading;
+        while(opMode.opModeIsActive() && Math.abs(startHeading  - currentHeading) > 3){
+            currentHeading = imu.getHeading();
+            double power = .5;
+            Robot.drive(power, power, -power, -power);
+
+
+        }
+    }
+
+
 }

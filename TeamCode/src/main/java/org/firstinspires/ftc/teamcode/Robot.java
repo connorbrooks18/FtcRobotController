@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -13,14 +14,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Control;
 
 
+
+
 public class Robot {
 
 
+    static final double slow = .5;
+    static final double fast = 1;
 
     static DcMotor rf;
     static DcMotor rb;
     static DcMotor lb;
     static DcMotor lf;
+
+    static ColorSensor cs1;
 
 
     static double gear = 1;
@@ -61,10 +68,10 @@ public class Robot {
 
     public static void drive(double rfPower, double rbPower, double lbPower, double lfPower) {
 
-        rf.setPower(rfPower);
-        rb.setPower(rbPower);
-        lb.setPower(lbPower);
-        lf.setPower(lfPower);
+        rf.setPower(rfPower * gear);
+        rb.setPower(rbPower * gear);
+        lb.setPower(lbPower * gear);
+        lf.setPower(lfPower * gear);
 
 
     }
@@ -73,8 +80,7 @@ public class Robot {
 
     public static double updateGear(Control c){
 
-        double slow = .5;
-        double fast = 1;
+
         if(c.options && !c.prevOptions){
             gear = (gear == slow) ? fast : slow;
         }

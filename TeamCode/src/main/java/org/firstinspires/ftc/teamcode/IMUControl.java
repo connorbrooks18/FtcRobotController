@@ -10,8 +10,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class IMUControl {
 
-    static BNO055IMU imu;
-    static Orientation angles;
+    BNO055IMU imu;
+    Orientation angles;
 
 
 
@@ -30,7 +30,12 @@ public class IMUControl {
 
     }
 
-    public static double getANGLE(OpMode opMode, String axis) {
+    public double getHeading(){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
+    }
+
+    public double getANGLE(OpMode opMode, String axis) {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         switch (axis.toUpperCase()) {
             case "X":
