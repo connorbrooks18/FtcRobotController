@@ -14,8 +14,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import static org.firstinspires.ftc.teamcode.Robot.*;
 
-@TeleOp(name = "TelopTest")
-public class TeleopTest extends LinearOpMode {
+@TeleOp(name = "Telop")
+public class Teleop extends LinearOpMode {
 
     OpenCvCamera webcam;
     @Override
@@ -45,43 +45,20 @@ public class TeleopTest extends LinearOpMode {
 
         });
 
-//        initMotors(this);
-//        initAUTO(this);
-//        Control c = new Control(this);
+        initMotors(this);
+        initAUTO(this);
+        Control c = new Control(this);
 
         waitForStart();
         while(opModeIsActive()){
-//            c.update();
-//
-//            rcDriving(c);
-            Servo servoWheel = this.hardwareMap.get(Servo.class, "wheelServo");
-            ColorSensor cs = this.hardwareMap.get(ColorSensor.class, "csi");
-            DistanceSensor ds = ((DistanceSensor) cs);
-//            Servo dumpServo = this.hardwareMap.get(Servo.class, "dumpServo");
+            c.update();
+
+            rcDriving(c);
 
 
-            if(gamepad1.a){
-                servoWheel.setPosition(1);
-            } else if(gamepad1.b){
-                servoWheel.setPosition(0);
-            } else {
-                servoWheel.setPosition(.5);
-            }
 
 
-            telemetry.addData("Distance: ", ds.getDistance(DistanceUnit.MM));
-            telemetry.addData("R: ", cs.red());
-            telemetry.addData("G: ", cs.green());
-            telemetry.addData("B: ", cs.blue());
-//            int[] encoderValues = ad.getEncoderPositions();
-//            telemetry.addData("LEncoder: ", encoderValues[0]);
-//            telemetry.addData("MEncoder: ", encoderValues[1]);
-//            telemetry.addData("REncoder: ", encoderValues[2]);
 
-//
-//            telemetry.addData("X: ", imu.getANGLE(this, "X"));
-//            telemetry.addData("Y: ", imu.getANGLE(this, "Y"));
-//            telemetry.addData("Z: ", imu.getANGLE(this, "Z"));
 
 
             telemetry.update();

@@ -5,11 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+
 
 import org.firstinspires.ftc.teamcode.Control;
 
@@ -27,13 +30,20 @@ public class Robot {
     static DcMotor lb;
     static DcMotor lf;
 
+
     static ColorSensor cs1;
+
+    static Servo camServo;
 
 
     static double gear = 1;
 
+
+    static Intake intake;
+
     static AutonomousDrive ad;
     static IMUControl imu;
+    static AprilTagPipeline aptag;
 
 
     public static void initMotors(OpMode opmode) {
@@ -41,6 +51,10 @@ public class Robot {
         rb = opmode.hardwareMap.get(DcMotor.class, "rb");
         lb = opmode.hardwareMap.get(DcMotor.class, "lb");
         lf = opmode.hardwareMap.get(DcMotor.class, "lf");
+
+        //0 ports is the back motors config and both motors are goinf to both cobntrol and expasion hub
+        //Encoders go to those ports
+
 
         DcMotor[] motors = {rf, rb, lb, lf};
         for (int i = 0; i < 4; i++) {
@@ -50,6 +64,11 @@ public class Robot {
 
     }
 
+    public static void intServos(OpMode opMode){
+        camServo = opMode.hardwareMap.get(Servo.class, "camservo");
+        intake = new Intake(opMode);
+    }
+
 
 
     public static void initAUTO(OpMode opMode){
@@ -57,8 +76,9 @@ public class Robot {
         initMotors(opMode);
         imu = new IMUControl(opMode);
 
-        ad = new AutonomousDrive(lb, rb, rf);
+        ad = new AutonomousDrive(lb, rb);
 
+        aptag = new AprilTagPipeline(camServo,rf,rb,lf,lb);
 
     }
 
@@ -159,6 +179,14 @@ public class Robot {
 
 
     }
+
+    public SampleColor intakeSample(Control c){
+        intake.runWheels(true);
+
+        return SampleColor.YELLOW;
+
+    }
+
 
 
 

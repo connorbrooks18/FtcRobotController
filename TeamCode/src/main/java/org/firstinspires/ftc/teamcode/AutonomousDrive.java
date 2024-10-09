@@ -5,29 +5,26 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class AutonomousDrive {
 
-    static int[] startEncoderValue = {};
-    static int[] currentEncoderValue = {};
+    int[] startEncoderValue = {};
+    int[] currentEncoderValue = {};
 
-    DcMotor LEncoder;
+    DcMotor FEncoder;
     DcMotor MEncoder;
-    DcMotor REncoder;
 
 
-    public AutonomousDrive(DcMotor LEncoder, DcMotor MEncoder, DcMotor REncoder) {
-        this.LEncoder = LEncoder;
+    public AutonomousDrive(DcMotor FEncoder, DcMotor MEncoder) {
+        this.FEncoder = FEncoder;
         this.MEncoder = MEncoder;
-        this.REncoder = REncoder;
     }
 
-    public int[] getEncoderPositions() {
-
-        return new int[]{LEncoder.getCurrentPosition(), MEncoder.getCurrentPosition(), REncoder.getCurrentPosition()};
+    public int[] updateEncoderPositions() {
+        currentEncoderValue = new int[]{FEncoder.getCurrentPosition(), MEncoder.getCurrentPosition()};
+        return currentEncoderValue;
 
     }
 
     public static double distanceForward(int[] prevEncoderValue, int[] curEncoderValue) {
-
-        return (-((prevEncoderValue[0] + prevEncoderValue[2]) / 2.0)  + ((curEncoderValue[0] + curEncoderValue[2]) / 2.0));
+        return (curEncoderValue[0] - prevEncoderValue[0]);
 
     }
 
@@ -49,23 +46,25 @@ public class AutonomousDrive {
 
 
     public void forward(LinearOpMode opMode, double distanceTotal) {
-        startEncoderValue = this.getEncoderPositions();
+        this.updateEncoderPositions();
+        startEncoderValue = currentEncoderValue.clone();
         distanceTotal = inchesToTicks(distanceTotal);
-        while (ticksToInches(distanceForward(startEncoderValue, this.getEncoderPositions())) < distanceTotal && opMode.opModeIsActive()) {
-
-            double distanceToGo = distanceTotal - distanceForward(startEncoderValue, this.getEncoderPositions());
-            double power = distanceToGo * 0.50;
+        while (ticksToInches(distanceForward(startEncoderValue, currentEncoderValue)) < distanceTotal && opMode.opModeIsActive()) {
+            double distanceToGo = distanceTotal - distanceForward(startEncoderValue, currentEncoderValue);
+            double power = powerCurving(distanceToGo);
             Robot.drive(power, power, power, power);
+            this.updateEncoderPositions();
         }
     }
     public void strafe(LinearOpMode opMode, double distanceTotal){
-        startEncoderValue = this.getEncoderPositions();
-        //distanceTotal = inchesToTicks(distanceTotal);
-        while (ticksToInches(distanceSide(startEncoderValue, this.getEncoderPositions())) < distanceTotal && opMode.opModeIsActive()) {
+        this.updateEncoderPositions();
+        startEncoderValue = currentEncoderValue.clone();
+        while (ticksToInches(distanceSide(startEncoderValue, currentEncoderValue)) < distanceTotal && opMode.opModeIsActive()) {
 
-            double distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, this.getEncoderPositions()));
-            double power = Math.sqrt(distanceToGo/14.0);
+            double distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, currentEncoderValue));
+            double power = powerCurving(distanceToGo);
             Robot.drive(-power, power, -power, power);
+            this.updateEncoderPositions();
         }
 
     }
@@ -79,6 +78,10 @@ public class AutonomousDrive {
 
 
         }
+    }
+
+    public static double powerCurving(double distanceToGo){
+        return Math.pow((distanceToGo/16), 3.0);
     }
 
 

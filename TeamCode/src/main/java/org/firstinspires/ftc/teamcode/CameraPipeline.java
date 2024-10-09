@@ -22,7 +22,7 @@ public class CameraPipeline extends OpenCvPipeline {
     public final Scalar[] neonBounds = {new Scalar(40, 120, 40), new Scalar(83, 255, 255)};
 
 
-    public Scalar[] currentBounds = neonBounds;
+    public Scalar[] currentBounds = blueBounds;
 
     Telemetry telemetry;
     private Rect rectCrop = new Rect(0, 0, 320, 240);
@@ -75,12 +75,12 @@ public class CameraPipeline extends OpenCvPipeline {
         coneAreaArray = getContourArea(mat);
 
 
-        telemetry.addData("Contour area: ", getContourArea(mat));
-        telemetry.addData("stack size: ", getConeArea());
-        telemetry.addData("Contours", conarr.size());
-        telemetry.addData("SIDE ", (fieldColor == 0)?"BLUE":"RED");
-        telemetry.addData("Park? ", (park == 0)?"No Park":"Do Park");
-        telemetry.update();
+//        telemetry.addData("Contour area: ", getContourArea(mat));
+//        telemetry.addData("stack size: ", getConeArea());
+//        telemetry.addData("Contours", conarr.size());
+//        telemetry.addData("SIDE ", (fieldColor == 0)?"BLUE":"RED");
+//        telemetry.addData("Park? ", (park == 0)?"No Park":"Do Park");
+//        telemetry.update();
 
         return image;
     }
@@ -103,7 +103,7 @@ public class CameraPipeline extends OpenCvPipeline {
 
         telemetry.update();
 
-        double minArea = 400;
+        double minArea = 200;
         for (int i = 0; i < contours.size(); i++) {
             Mat contour = contours.get(i);
             double contourArea = Imgproc.contourArea(contour);
