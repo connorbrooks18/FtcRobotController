@@ -1,22 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-
-
-import org.firstinspires.ftc.teamcode.Control;
-
-
 
 
 public class Robot {
@@ -40,13 +27,14 @@ public class Robot {
 
 
     static Intake intake;
+    static Outtake outtake;
 
     static AutonomousDrive ad;
     static IMUControl imu;
     static AprilTagPipeline aptag;
 
 
-    public static void initMotors(OpMode opmode) {
+    public static void initDrive(OpMode opmode) {
         rf = opmode.hardwareMap.get(DcMotor.class, "rf");
         rb = opmode.hardwareMap.get(DcMotor.class, "rb");
         lb = opmode.hardwareMap.get(DcMotor.class, "lb");
@@ -64,16 +52,19 @@ public class Robot {
 
     }
 
-    public static void intServos(OpMode opMode){
-        camServo = opMode.hardwareMap.get(Servo.class, "camservo");
+    public static void initAccessories(OpMode opMode){
+        //camServo = opMode.hardwareMap.get(Servo.class, "camservo");
         intake = new Intake(opMode);
+        outtake = new Outtake(opMode);
+
     }
 
 
 
-    public static void initAUTO(OpMode opMode){
+    public static void initAll(OpMode opMode){
 
-        initMotors(opMode);
+        initDrive(opMode);
+        initAccessories(opMode);
         imu = new IMUControl(opMode);
 
         ad = new AutonomousDrive(lb, rb);
@@ -99,7 +90,6 @@ public class Robot {
 
 
     public static double updateGear(Control c){
-
 
         if(c.options && !c.prevOptions){
             gear = (gear == slow) ? fast : slow;

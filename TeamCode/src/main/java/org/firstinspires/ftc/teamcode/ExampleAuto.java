@@ -10,13 +10,15 @@ public class ExampleAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initAUTO(this);
+        initAll(this);
 
         waitForStart();
 
 
         ad.forward(this, 48);
         ad.strafe(this, 50);
+
+
 
 
     }
