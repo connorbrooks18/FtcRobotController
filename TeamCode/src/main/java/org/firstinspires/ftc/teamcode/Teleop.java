@@ -40,15 +40,13 @@ public class Teleop extends LinearOpMode {
 
         });
 
-        initDrive(this);
         initAll(this);
-        Control c = new Control(this);
 
         waitForStart();
         while(opModeIsActive()){
             c.update();
 
-            rcDriving(c);
+            rcDriving();
 
 
 

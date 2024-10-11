@@ -35,13 +35,9 @@ public class AutonomousDrive {
     }
 
 
-    public static double ticksToInches(double ticks) {
-        return ticks / 11873.736;
-    }
+    public static double ticksToInches(double ticks) {return ((ticks /2000) * (48 * Math.PI))/25.4;}
 
-    public static double inchesToTicks(double inches) {
-        return (11873.736) * inches;
-    }
+    public static double inchesToTicks(double inches) {return ((inches/25.4)/(48*Math.PI))/2000;}
 
 
 

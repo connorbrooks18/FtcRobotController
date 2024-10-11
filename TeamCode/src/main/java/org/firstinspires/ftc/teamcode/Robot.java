@@ -26,6 +26,9 @@ public class Robot {
     static double gear = 1;
 
 
+    static Control c;
+
+
     static Intake intake;
     static Outtake outtake;
 
@@ -89,7 +92,7 @@ public class Robot {
 
 
 
-    public static double updateGear(Control c){
+    public static double updateGear(){
 
         if(c.options && !c.prevOptions){
             gear = (gear == slow) ? fast : slow;
@@ -98,9 +101,9 @@ public class Robot {
     }
 
 
-    public static double[] rcDriving(Control c){
+    public static double[] rcDriving(){
 
-        updateGear(c);
+        updateGear();
 
         double v1 = 0;
         double v2 = 0;
