@@ -1,10 +1,12 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.Robot.*;
+
+import org.firstinspires.ftc.teamcode.Control;
 
 @TeleOp(name = "Other")
 public class Testmotor extends LinearOpMode {

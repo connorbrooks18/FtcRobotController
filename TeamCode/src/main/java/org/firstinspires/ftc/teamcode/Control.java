@@ -4,52 +4,52 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class Control {
-    boolean LBumper1;
-    boolean RBumper1;
+    public boolean LBumper1;
+    public boolean RBumper1;
 
-    double LStickY;
-    double LStickX;
-    double RStickY;
-    double RStickX;
+    public double LStickY;
+    public double LStickX;
+    public double RStickY;
+    public double RStickX;
 
-    double LTrigger1; //
-    double RTrigger1; //
+    public double LTrigger1; //
+    public double RTrigger1; //
 
-    boolean a1;
-    boolean b1;
-    boolean x1;
-    boolean y1;
+    public boolean a1;
+    public boolean b1;
+    public boolean x1;
+    public boolean y1;
 
-    boolean a2;
-    boolean b2;
-    boolean x2;
-    boolean y2;
+    public boolean a2;
+    public boolean b2;
+    public boolean x2;
+    public boolean y2;
 
-    double LTrigger2;
-    double RTrigger2;
-    boolean LBumper2;
-    boolean RBumper2;
+    public double LTrigger2;
+    public double RTrigger2;
+    public boolean LBumper2;
+    public boolean RBumper2;
 
-    double RStickY2;
-    double RStickX2;
-    double LStickY2;
-    double LStickX2;
+    public double RStickY2;
+    public double RStickX2;
+    public double LStickY2;
+    public double LStickX2;
 
-    boolean dpadUp1;
-    boolean dpadDown1;
-    boolean dpadRight1;
-    boolean dpadLeft1;
+    public boolean dpadUp1;
+    public boolean dpadDown1;
+    public boolean dpadRight1;
+    public boolean dpadLeft1;
 
-    boolean dpadUp2;
-    boolean dpadDown2;
-    boolean dpadRight2;
-    boolean dpadLeft2;
+    public boolean dpadUp2;
+    public boolean dpadDown2;
+    public boolean dpadRight2;
+    public boolean dpadLeft2;
 
-    Gamepad gm1;
-    Gamepad gm2;
+    public Gamepad gm1;
+    public Gamepad gm2;
 
-    boolean prevOptions;
-    boolean options;
+    public boolean prevOptions;
+    public boolean options;
 
 
     public Control(OpMode opMode) {
@@ -58,11 +58,12 @@ public class Control {
 
     }
     public void update(){
+
          LBumper1 = gm1.left_bumper;
          RBumper1 = gm1.right_bumper;
-         LStickY = gm1.left_stick_y;
+         LStickY = -gm1.left_stick_y;
          LStickX = -gm1.left_stick_x;
-         RStickY = gm1.right_stick_y;
+         RStickY = -gm1.right_stick_y;
          RStickX = gm1.right_stick_x;
          LTrigger1 = gm1.left_trigger;
          RTrigger1 = gm1.right_trigger;

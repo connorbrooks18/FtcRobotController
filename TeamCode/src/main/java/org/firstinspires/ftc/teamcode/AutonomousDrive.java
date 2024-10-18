@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class AutonomousDrive {
 
-    int[] startEncoderValue = {};
-    int[] currentEncoderValue = {};
+    public int[] startEncoderValue = {};
+    public int[] currentEncoderValue = {};
 
     DcMotor FEncoder;
     DcMotor MEncoder;
@@ -15,10 +15,15 @@ public class AutonomousDrive {
     public AutonomousDrive(DcMotor FEncoder, DcMotor MEncoder) {
         this.FEncoder = FEncoder;
         this.MEncoder = MEncoder;
+
+        this.FEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.MEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.FEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        this.MEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public int[] updateEncoderPositions() {
-        currentEncoderValue = new int[]{FEncoder.getCurrentPosition(), MEncoder.getCurrentPosition()};
+        currentEncoderValue = new int[]{-FEncoder.getCurrentPosition(), -MEncoder.getCurrentPosition()};
         return currentEncoderValue;
 
     }
@@ -44,24 +49,42 @@ public class AutonomousDrive {
     public void forward(LinearOpMode opMode, double distanceTotal) {
         this.updateEncoderPositions();
         startEncoderValue = currentEncoderValue.clone();
-        distanceTotal = inchesToTicks(distanceTotal);
-        while (ticksToInches(distanceForward(startEncoderValue, currentEncoderValue)) < distanceTotal && opMode.opModeIsActive()) {
-            double distanceToGo = distanceTotal - distanceForward(startEncoderValue, currentEncoderValue);
+        //distanceTotal = inchesToTicks(distanceTotal);
+        double distanceToGo = distanceTotal - ticksToInches(distanceForward(startEncoderValue, currentEncoderValue));
+        while (Math.abs(distanceToGo) > .05 && opMode.opModeIsActive()) {
+            distanceToGo = distanceTotal - ticksToInches(distanceForward(startEncoderValue, currentEncoderValue));
             double power = powerCurving(distanceToGo);
             Robot.drive(power, power, power, power);
             this.updateEncoderPositions();
+            opMode.telemetry.addData("distanceToGo", distanceToGo);
+            opMode.telemetry.addData("distanceTotal", distanceTotal);
+            opMode.telemetry.addData("power", power);
+            opMode.telemetry.addData("F Encoder", this.currentEncoderValue[0]);
+            opMode.telemetry.addData("M Encoder", this.currentEncoderValue[1]);
+            opMode.telemetry.update();
         }
+        Robot.drive(0, 0, 0, 0);
     }
     public void strafe(LinearOpMode opMode, double distanceTotal){
         this.updateEncoderPositions();
         startEncoderValue = currentEncoderValue.clone();
-        while (ticksToInches(distanceSide(startEncoderValue, currentEncoderValue)) < distanceTotal && opMode.opModeIsActive()) {
+        double distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, currentEncoderValue));
+        while (Math.abs(distanceToGo) > 0.05 && opMode.opModeIsActive()) {
 
-            double distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, currentEncoderValue));
+            distanceToGo = distanceTotal - ticksToInches(distanceSide(startEncoderValue, currentEncoderValue));
             double power = powerCurving(distanceToGo);
             Robot.drive(-power, power, -power, power);
             this.updateEncoderPositions();
+            opMode.telemetry.addData("distanceToGo", distanceToGo);
+            opMode.telemetry.addData("distanceTotal", distanceTotal);
+            opMode.telemetry.addData("power", power);
+            opMode.telemetry.addData("F Encoder", this.currentEncoderValue[0]);
+            opMode.telemetry.addData("M Encoder", this.currentEncoderValue[1]);
+            opMode.telemetry.update();
         }
+
+        Robot.drive(0, 0, 0, 0);
+
 
     }
     public void turnDegrees(LinearOpMode opMode, double degrees, IMUControl imu){
@@ -77,7 +100,7 @@ public class AutonomousDrive {
     }
 
     public static double powerCurving(double distanceToGo){
-        return Math.pow((distanceToGo/16), 3.0);
+        return (distanceToGo/16.0 < .10) ? .10 : distanceToGo/16.0;
     }
 
 
