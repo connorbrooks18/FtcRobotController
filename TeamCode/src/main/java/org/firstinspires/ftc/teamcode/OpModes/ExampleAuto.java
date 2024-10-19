@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.Robot.*;
 
 import org.firstinspires.ftc.teamcode.AutonomousDrive;
 
-@Autonomous (name="test 48in.")
+@Autonomous (name="test 24in.")
 public class ExampleAuto extends LinearOpMode {
 
 
@@ -17,7 +17,9 @@ public class ExampleAuto extends LinearOpMode {
         waitForStart();
 
 
-        ad.strafe(this, 24);
+        ad.forward(this, 24);
+        sleep(250);
+        ad.forward(this, -24);
 
         while(opModeIsActive()) {
             telemetry.addData("distance Gone", AutonomousDrive.ticksToInches(ad.currentEncoderValue[1] - ad.startEncoderValue[1]));
@@ -25,6 +27,7 @@ public class ExampleAuto extends LinearOpMode {
             telemetry.addData("M Encoder", ad.currentEncoderValue[1]);
             telemetry.update();
         }
+
 
 
 

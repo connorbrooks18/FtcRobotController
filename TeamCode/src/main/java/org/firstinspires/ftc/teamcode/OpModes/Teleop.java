@@ -48,15 +48,15 @@ public class Teleop extends LinearOpMode {
             c.update();
 
             rcDriving();
+            rcIntake();
 
+            
 
-
-
-            telemetry.addData("rf", rf.getPower());
-            telemetry.addData("rb", rb.getPower());
-            telemetry.addData("lb", lb.getPower());
-            telemetry.addData("lf", lf.getPower());
-            telemetry.addData("LStick y", c.LStickY);
+            telemetry.addData("Rstick Y2", c.RStickY2);
+            telemetry.addData("intake wheels pos", intake.wheelServo.getPosition());
+            telemetry.addData("Hslide pos", intake.hslide.getCurrentPosition());
+            telemetry.addData("Hslide pow", intake.hslide.getPower());
+            telemetry.addData("LStick y 2", c.LStickY2);
 
             telemetry.update();
 

@@ -8,8 +8,8 @@ public class AutonomousDrive {
     public int[] startEncoderValue = {};
     public int[] currentEncoderValue = {};
 
-    DcMotor FEncoder;
-    DcMotor MEncoder;
+    private DcMotor FEncoder;
+    private DcMotor MEncoder;
 
 
     public AutonomousDrive(DcMotor FEncoder, DcMotor MEncoder) {
@@ -51,17 +51,15 @@ public class AutonomousDrive {
         startEncoderValue = currentEncoderValue.clone();
         //distanceTotal = inchesToTicks(distanceTotal);
         double distanceToGo = distanceTotal - ticksToInches(distanceForward(startEncoderValue, currentEncoderValue));
-        while (Math.abs(distanceToGo) > .05 && opMode.opModeIsActive()) {
+        while (Math.abs(distanceToGo) > .025 && opMode.opModeIsActive()) {
+
             distanceToGo = distanceTotal - ticksToInches(distanceForward(startEncoderValue, currentEncoderValue));
             double power = powerCurving(distanceToGo);
             Robot.drive(power, power, power, power);
             this.updateEncoderPositions();
-            opMode.telemetry.addData("distanceToGo", distanceToGo);
-            opMode.telemetry.addData("distanceTotal", distanceTotal);
-            opMode.telemetry.addData("power", power);
-            opMode.telemetry.addData("F Encoder", this.currentEncoderValue[0]);
-            opMode.telemetry.addData("M Encoder", this.currentEncoderValue[1]);
-            opMode.telemetry.update();
+            this.outputDriveInfo(opMode, distanceToGo, distanceTotal, power);
+
+
         }
         Robot.drive(0, 0, 0, 0);
     }
@@ -75,12 +73,8 @@ public class AutonomousDrive {
             double power = powerCurving(distanceToGo);
             Robot.drive(-power, power, -power, power);
             this.updateEncoderPositions();
-            opMode.telemetry.addData("distanceToGo", distanceToGo);
-            opMode.telemetry.addData("distanceTotal", distanceTotal);
-            opMode.telemetry.addData("power", power);
-            opMode.telemetry.addData("F Encoder", this.currentEncoderValue[0]);
-            opMode.telemetry.addData("M Encoder", this.currentEncoderValue[1]);
-            opMode.telemetry.update();
+            this.outputDriveInfo(opMode, distanceToGo, distanceTotal, power);
+
         }
 
         Robot.drive(0, 0, 0, 0);
@@ -100,7 +94,22 @@ public class AutonomousDrive {
     }
 
     public static double powerCurving(double distanceToGo){
-        return (distanceToGo/16.0 < .10) ? .10 : distanceToGo/16.0;
+        double slope = 18.0;
+        double min = .20;
+        if(distanceToGo > 0) {
+            return (distanceToGo / slope < min) ? min : distanceToGo / slope;
+        }else{
+            return (distanceToGo / slope > -min) ? -min : distanceToGo / slope;
+        }
+    }
+
+    public void outputDriveInfo(LinearOpMode opMode, double distanceToGo, double distanceTotal, double power){
+        opMode.telemetry.addData("distanceToGo", distanceToGo);
+        opMode.telemetry.addData("distanceTotal", distanceTotal);
+        opMode.telemetry.addData("power", power);
+        opMode.telemetry.addData("F Encoder", this.currentEncoderValue[0]);
+        opMode.telemetry.addData("M Encoder", this.currentEncoderValue[1]);
+        opMode.telemetry.update();
     }
 
 

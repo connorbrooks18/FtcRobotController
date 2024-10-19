@@ -64,7 +64,7 @@ public class Robot {
     public static void initAccessories(OpMode opMode){
         //camServo = opMode.hardwareMap.get(Servo.class, "camservo");
         intake = new Intake(opMode);
-        outtake = new Outtake(opMode);
+        //outtake = new Outtake(opMode);
 
     }
 
@@ -73,7 +73,7 @@ public class Robot {
     public static void initAll(OpMode opMode){
 
         initDrive(opMode);
-        //initAccessories(opMode);
+        initAccessories(opMode);
         imu = new IMUControl(opMode);
 
         c = new Control(opMode);
@@ -181,10 +181,32 @@ public class Robot {
 
     }
 
-    public SampleColor intakeSample(Control c){
-        intake.runWheels(true);
+    public static void rcIntake(){
+        if(c.RBumper2){
+            intake.runWheels(true);
+        } else if(c.LBumper2){
+            intake.runWheels(false);
+        } else {
+            intake.stopWheels();
+        }
 
-        return SampleColor.YELLOW;
+        if(c.a2){
+            intake.tsCurrent = intake.tsDown;
+        }else if(c.b2){
+            intake.tsCurrent = intake.tsMiddle;
+        }else if(c.y2){
+            intake.tsCurrent = intake.tsUp;
+        }
+        intake.setTransferServo();
+
+
+
+
+        if(Math.abs(c.LStickY2) > .05){
+            intake.runSlide(c.LStickY2);
+        } else {
+            intake.stopSlide();
+        }
 
     }
 

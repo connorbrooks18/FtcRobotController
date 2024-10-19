@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -10,29 +11,34 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Intake {
-    DcMotor hslide;
-    Servo wheelServo;
-    Servo transferServo;
-    ColorSensor cs;
-    DistanceSensor ds;
-    TouchSensor hslideBottom;
+    public DcMotor hslide;
+    public Servo wheelServo;
+    public Servo transferServo;
+    public ColorSensor cs;
+    public DistanceSensor ds;
+    public TouchSensor hslideBottom;
 
     static double inSlidePos = 0;
 
-    static double transferServoBase = 0; // siting position of transfer sevo
-    static double transferServoTransfer = 1; // position that dumps the sample
+    public double tsDown = .38; // siting position of transfer sevo
+    public double tsMiddle = .667;
+    public double tsUp = .89; // position that dumps the sample
+    public double tsCurrent = tsDown;
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
+
         wheelServo = opMode.hardwareMap.get(Servo.class, "servoWheel");
-        transferServo = opMode.hardwareMap.get(Servo.class, "servoDump");
+        transferServo = opMode.hardwareMap.get(Servo.class, "servoTransfer");
 
-        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
-        ds = (DistanceSensor)cs;
+//        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
+//        ds = (DistanceSensor)cs;
 
-        hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslideLimitSwitch");
+        //hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslideLimitSwitch");
+        hslide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         hslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
     }
 
@@ -48,6 +54,15 @@ public class Intake {
         }
     }
 
+    public void runSlide(double power){
+
+        hslide.setPower(power);
+
+    }
+
+    public void stopSlide(){
+        hslide.setPower(0);
+    }
 
 
     public void runWheels(boolean in){
@@ -58,13 +73,11 @@ public class Intake {
         wheelServo.setPosition(.5);
     }
 
-    public void transferSample(){
-        transferServo.setPosition(transferServoTransfer);
+    public void setTransferServo() {
+        transferServo.setPosition(tsCurrent);
     }
 
-    public void resetTransferServo(){
-        transferServo.setPosition(transferServoBase);
-    }
+
 
 
     public SampleColor getColor(){
