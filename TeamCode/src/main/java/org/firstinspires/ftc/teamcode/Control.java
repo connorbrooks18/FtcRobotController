@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+
 public class Control {
     public boolean LBumper1;
     public boolean RBumper1;
@@ -14,6 +15,7 @@ public class Control {
 
     public double LTrigger1; //
     public double RTrigger1; //
+//
 
     public boolean a1;
     public boolean b1;

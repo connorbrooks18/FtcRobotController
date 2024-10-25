@@ -3,6 +3,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import static org.firstinspires.ftc.teamcode.Robot.*;
 
 import org.firstinspires.ftc.teamcode.AutonomousDrive;
 import org.firstinspires.ftc.teamcode.IMUControl;
@@ -39,41 +40,22 @@ public class TeleopTest extends LinearOpMode {
 //
 //        });
 
-        IMUControl imu = new IMUControl(this);
-        DcMotor fe = this.hardwareMap.get(DcMotor.class, "rb");
-        DcMotor me = this.hardwareMap.get(DcMotor.class, "lb");
-        DcMotor sm = this.hardwareMap.get(DcMotor.class, "vslide");
-        sm.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        fe.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        me.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        fe.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        me.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fe.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
 
 
 
         waitForStart();
         while(opModeIsActive()){
 
+            if(Math.abs(c.RStickY2) > .05) {
+                outtake.runSlidePow(c.RStickY2);
+            }
 
 
-            sm.setPower(Math.abs(gamepad1.left_stick_y) > .05 ? -gamepad1.left_stick_y : 0);
-//            telemetry.addData("Distance: ", ds.getDistance(DistanceUnit.MM));
-//            telemetry.addData("R: ", cs.red());
-//            telemetry.addData("G: ", cs.green());
-//            telemetry.addData("B: ", cs.blue());
-//            int[] encoderValues = ad.getEncoderPositions();
-            telemetry.addData("FE : ", fe.getCurrentPosition());
-            telemetry.addData("ME : ", me.getCurrentPosition());
-            telemetry.addData("FE inches : ", AutonomousDrive.ticksToInches(fe.getCurrentPosition()));
-            telemetry.addData("ME inches : ", AutonomousDrive.ticksToInches(me.getCurrentPosition()));
-
-//
-            telemetry.addData("Z: ", imu.getAdjustedHeading());
-            telemetry.addData("Slide encoder val", sm.getCurrentPosition());
-
-
+            telemetry.addData("vslide encoder", outtake.getVSlidePos());
             telemetry.update();
 
         }

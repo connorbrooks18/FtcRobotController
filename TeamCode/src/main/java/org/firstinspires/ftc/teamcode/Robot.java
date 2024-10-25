@@ -31,7 +31,7 @@ public class Robot {
 
 
     public static Intake intake;
-    static Outtake outtake;
+    public static Outtake outtake;
 
     public static AutonomousDrive ad;
     public static IMUControl imu;
@@ -78,7 +78,7 @@ public class Robot {
 
         c = new Control(opMode);
 
-        ad = new AutonomousDrive(rb, lb);
+        ad = new AutonomousDrive(opMode, rb, lb);
 
         aptag = new AprilTagPipeline(camServo,rf,rb,lf,lb);
 
@@ -105,6 +105,7 @@ public class Robot {
         if(c.options && !c.prevOptions){
             gear = (gear == slow) ? fast : slow;
         }
+        gear = (intake.getCurrentHPos() > 250) ? slow : gear;
         return gear;
     }
 
@@ -208,6 +209,29 @@ public class Robot {
             intake.stopSlide();
         }
 
+    }
+
+    //Outtake Control
+    public static void rcOuttake(){
+        //Slide Controls
+        if(c.dpadUp2){
+            outtake.targetPos = outtake.highBucketSlidePos;
+        } else if (c.dpadLeft2) {
+            outtake.targetPos = outtake.lowBucketSlidePos;
+        } else if (c.dpadDown2){
+            outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
+            outtake.targetBucketPos = outtake.bucketRegPos;
+        }
+
+        //Bucket Positions (for dumping)
+        if (c.LTrigger2 > .25){
+            outtake.targetBucketPos = outtake.bucketRegPos;
+        } else if (c.RTrigger2 > .25){
+            outtake.targetBucketPos = outtake.bucketOutPos;
+        }
+
+        outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
+        outtake.setBucketPos(outtake.targetBucketPos);
     }
 
 
