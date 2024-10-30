@@ -61,6 +61,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("RStick x ", c.RStickX);
             telemetry.addData("power lf", lf.getPower());
             telemetry.addData("power rb", rb.getPower());
+            telemetry.addData("Hslide pos", intake.hslide.getCurrentPosition());
 
             telemetry.update();
 

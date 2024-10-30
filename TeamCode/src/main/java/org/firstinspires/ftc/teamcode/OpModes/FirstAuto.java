@@ -6,8 +6,8 @@ import static org.firstinspires.ftc.teamcode.Robot.*;
 
 import org.firstinspires.ftc.teamcode.AutonomousDrive;
 
-@Autonomous (name="test 24in.")
-public class ExampleAuto extends LinearOpMode {
+@Autonomous (name="left side")
+public class FirstAuto extends LinearOpMode {
 
 
     @Override
@@ -16,20 +16,20 @@ public class ExampleAuto extends LinearOpMode {
 
         waitForStart();
 
+        // Point 0 to point 1
+        ad.forward(this, 4);
 
-//        ad.strafe(this, 24);
-//        sleep(2500);
+        // Point 1 to point 2
         ad.strafe(this, -24);
+        ad.forward(this, -1);
 
-        while(opModeIsActive()) {
-//            telemetry.addData("Distance Gone X", ad.getX());
-//            telemetry.addData("Distance Gone Y", ad.getY());
-//
-//            telemetry.update();
-        }
+        // Point 2 to point 3
+        ad.strafe(this, 1);
+        ad.forward(this, 55);
 
-
-
+        // Point 3 to point 4
+        ad.strafe(this, 32);
+        ad.forward(this, 2);
 
 
     }

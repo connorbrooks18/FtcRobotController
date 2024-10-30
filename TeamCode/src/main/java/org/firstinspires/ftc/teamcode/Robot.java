@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,6 +26,7 @@ public class Robot {
 
 
     public static double gear = 1;
+    private static double gearprev = 1;
 
 
     public static Control c;
@@ -78,7 +80,7 @@ public class Robot {
 
         c = new Control(opMode);
 
-        ad = new AutonomousDrive(opMode, rb, lb);
+        ad = new AutonomousDrive(opMode);
 
         aptag = new AprilTagPipeline(camServo,rf,rb,lf,lb);
 
@@ -103,9 +105,10 @@ public class Robot {
     public static double updateGear(){
 
         if(c.options && !c.prevOptions){
-            gear = (gear == slow) ? fast : slow;
+            gearprev = (gearprev == slow) ? fast : slow;
         }
-        gear = (intake.getCurrentHPos() > 250) ? slow : gear;
+        gear = (intake.getCurrentHPos() > 250) ? slow : gearprev;
+
         return gear;
     }
 
