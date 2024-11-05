@@ -27,9 +27,10 @@ public class Outtake {
 
     //Vars for Bucket Dumping Positions
     public double bucketOutPos = 0; //temp value
-    public double bucketRegPos = 0; //temp value
+    public double bucketRegPos = 0.5; //temp value
 
     public double targetBucketPos = bucketRegPos;
+
 
     //Constructor
     public Outtake(OpMode opMode){

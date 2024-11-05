@@ -49,7 +49,7 @@ public class Robot {
 
 
 
-        //0 ports is the back motors config and both motors are goinf to both cobntrol and expasion hub
+        //0 ports is the back motors config and both motors are going to both control and expansion hub
         //Encoders go to those ports
 
 
@@ -131,7 +131,7 @@ public class Robot {
             double r = Math.hypot(c.LStickX, c.LStickY) * gear;
             double robotAngle = Math.atan2(c.LStickY, c.LStickX) - Math.PI / 4;
 
-            v1 = r * Math.sin(robotAngle) + c.RStickX; //lf // wsa cos
+            v1 = r * Math.sin(robotAngle) + c.RStickX; //lf // was cos
             v2 = r * Math.cos(robotAngle) - c.RStickX; //rf // was sin
             v3 = r * Math.cos(robotAngle) + c.RStickX; //lb // was sin
             v4 = r * Math.sin(robotAngle) - c.RStickX; //rb // was cos
@@ -218,14 +218,13 @@ public class Robot {
     public static void rcOuttake(){
         //Slide Controls
         if(c.dpadUp2){
-            outtake.targetPos = outtake.highBucketSlidePos;
+            outtake.setBucketPos(1);
         } else if (c.dpadLeft2) {
-            outtake.targetPos = outtake.lowBucketSlidePos;
+            outtake.setBucketPos(0);
         } else if (c.dpadDown2){
-            outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
-            outtake.targetBucketPos = outtake.bucketRegPos;
+            //outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
+            outtake.setBucketPos(0.5);
         }
-
         //Bucket Positions (for dumping)
         if (c.LTrigger2 > .25){
             outtake.targetBucketPos = outtake.bucketRegPos;
@@ -233,8 +232,8 @@ public class Robot {
             outtake.targetBucketPos = outtake.bucketOutPos;
         }
 
-        outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
-        outtake.setBucketPos(outtake.targetBucketPos);
+        //outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
+        //outtake.setBucketPos(outtake.targetBucketPos);
     }
 
 

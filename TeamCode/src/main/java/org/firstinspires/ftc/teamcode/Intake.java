@@ -23,9 +23,9 @@ public class Intake {
     //Vars
     static double inSlidePos = 0;
 
-    public double tsDown = .38; // siting position of transfer sevo
-    public double tsMiddle = .667;
-    public double tsUp = .89; // position that dumps the sample
+    public double tsDown = .6; // siting position of transfer sevo
+    public double tsMiddle = .777;
+    public double tsUp = 1; // position that dumps the sample
     public double tsCurrent = tsUp;
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
