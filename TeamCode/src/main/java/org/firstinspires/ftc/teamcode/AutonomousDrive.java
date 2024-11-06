@@ -21,8 +21,7 @@ public class AutonomousDrive {
         odo.setOffsets(139.5, 101.6);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        odo.recalibrateIMU();
-        odo.resetPosAndIMU();
+        this.resetOdo((LinearOpMode)opMode);
         ((LinearOpMode)opMode).sleep(250);
 
 
@@ -84,12 +83,11 @@ public class AutonomousDrive {
     public void goToHeading(LinearOpMode opMode, double degrees){
         degrees = limitTurn(degrees);
         double currentHeading = getHeading();
-        double targetheading = limitTurn(degrees);
-        double angelTogo = targetheading - currentHeading;
-        while(opMode.opModeIsActive() && Math.abs(angelTogo) > 3){
+        double angelTogo = degrees - currentHeading;
+        while(opMode.opModeIsActive() && Math.abs(angelTogo) > .5){
             currentHeading =  getHeading();
-            angelTogo = targetheading - currentHeading;
-            double power = (degrees >= 0) ? powerCurvingTurn(angelTogo): powerCurvingTurn(-angelTogo);
+            angelTogo = degrees - currentHeading;
+            double power =  powerCurvingTurn(angelTogo);
             Robot.drive(power, power, -power, -power);
 
             opMode.telemetry.addData("Current Heading", currentHeading);
@@ -112,8 +110,8 @@ public class AutonomousDrive {
     }
 
     public static double powerCurvingTurn(double angleToGo){
-        double slope = 45;
-        double min = 0.15;
+        double slope = 90;
+        double min = .2;
         if(angleToGo > 0) {
             return (angleToGo / slope < min) ? min : angleToGo / slope;
         }else{
@@ -136,7 +134,7 @@ public class AutonomousDrive {
         return odo.getPosition().getHeading(AngleUnit.DEGREES) + 180;
     }
 
-    public void restOdo(LinearOpMode opMode){
+    public void resetOdo(LinearOpMode opMode){
         odo.recalibrateIMU();
         opMode.sleep(300);
         odo.resetPosAndIMU();

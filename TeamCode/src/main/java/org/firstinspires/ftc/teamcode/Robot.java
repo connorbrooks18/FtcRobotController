@@ -66,6 +66,7 @@ public class Robot {
     public static void initAccessories(OpMode opMode){
         //camServo = opMode.hardwareMap.get(Servo.class, "camservo");
         intake = new Intake(opMode);
+        intake.setTransferServo();
         //outtake = new Outtake(opMode);
 
     }

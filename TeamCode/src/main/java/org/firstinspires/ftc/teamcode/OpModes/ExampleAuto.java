@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.Robot.*;
 
-import org.firstinspires.ftc.teamcode.AutonomousDrive;
-
 @Autonomous (name="ex. auto")
 public class ExampleAuto extends LinearOpMode {
 
@@ -13,10 +11,9 @@ public class ExampleAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initAll(this);
-
         waitForStart();
 
-        ad.restOdo(this);
+        ad.resetOdo(this);
 
 
 //        ad.strafe(this, 24);
