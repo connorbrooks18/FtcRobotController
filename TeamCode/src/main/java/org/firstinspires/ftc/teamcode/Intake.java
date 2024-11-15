@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+
 public class Intake {
 
     //Objects
@@ -21,12 +22,14 @@ public class Intake {
     public TouchSensor hslideBottom;
 
     //Vars
-    static double inSlidePos = 0;
+    double inSlidePos = 0;
+    double hSlideMax = 1470;
 
-    public double tsDown = .4325; // siting position of transfer sevo
-    public double tsMiddle = .777;
+    public double tsDown = .30; // siting position of transfer sevo
+    public double tsMiddle = .70;
     public double tsUp = .85; // position that dumps the sample
-    public double tsCurrent = tsUp;
+    public double tsTarget = tsUp;
+
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
 
@@ -36,7 +39,7 @@ public class Intake {
 //        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
 //        ds = (DistanceSensor)cs;
 
-        //hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslideLimitSwitch");
+        hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslidelimit");
         hslide.setDirection(DcMotorSimple.Direction.REVERSE);
 
         hslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -76,7 +79,7 @@ public class Intake {
     }
 
     public void setTransferServo() {
-        transferServo.setPosition(tsCurrent);
+        transferServo.setPosition(tsTarget);
     }
 
 

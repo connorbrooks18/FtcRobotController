@@ -46,16 +46,26 @@ public class TeleopTest extends LinearOpMode {
 
 
 
+        initAll(this);
+        intake.tsTarget = intake.tsMiddle;
+        intake.setTransferServo();
 
         waitForStart();
         while(opModeIsActive()){
+            c.update();
 
-            if(Math.abs(c.RStickY2) > .05) {
-                outtake.runSlidePow(c.RStickY2);
+
+            if(Math.abs(c.LStickY2) > .05){
+                outtake.vslideToPow(c.LStickY2);
+            } else {
+                outtake.vslideToPow(0);
             }
+            outtake.setBucketPos(c.RTrigger2);
+
 
 
             telemetry.addData("vslide encoder", outtake.getVSlidePos());
+            telemetry.addData("bucket pos", outtake.getBucketPos());
             telemetry.update();
 
         }

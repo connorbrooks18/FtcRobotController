@@ -14,10 +14,10 @@ public class TestAutoTurn extends LinearOpMode {
         waitForStart();
 
 
-        ad.goToHeading(this, 90);
-        ad.goToHeading(this, 0);
-        ad.goToHeading(this, 270);
-        ad.goToHeading(this, 180);
+        ad.goToHeading(90);
+        ad.goToHeading( 0);
+        ad.goToHeading( 270);
+        ad.goToHeading( 180);
 
         while(opModeIsActive()) {
 //            telemetry.addData("Distance Gone X", ad.getX());

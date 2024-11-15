@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -67,7 +67,7 @@ public class Robot {
         //camServo = opMode.hardwareMap.get(Servo.class, "camservo");
         intake = new Intake(opMode);
         intake.setTransferServo();
-        //outtake = new Outtake(opMode);
+        outtake = new Outtake(opMode);
 
     }
 
@@ -80,8 +80,9 @@ public class Robot {
         imu = new IMUControl(opMode);
 
         c = new Control(opMode);
+        c.update();
 
-        ad = new AutonomousDrive(opMode);
+        ad = new AutonomousDrive((LinearOpMode) opMode);
 
         aptag = new AprilTagPipeline(camServo,rf,rb,lf,lb);
 
@@ -196,20 +197,22 @@ public class Robot {
         }
 
         if(c.a2){
-            intake.tsCurrent = intake.tsDown;
+            intake.tsTarget = intake.tsDown;
         }else if(c.b2){
-            intake.tsCurrent = intake.tsMiddle;
+            intake.tsTarget = intake.tsMiddle;
         }else if(c.y2){
-            intake.tsCurrent = intake.tsUp;
+            intake.tsTarget = intake.tsUp;
         }
         intake.setTransferServo();
 
 
 
 
-        if(Math.abs(c.LStickY2) > .05){
+        if(c.LStickY2 > .05 && intake.getCurrentHPos() < intake.hSlideMax){
             intake.runSlide(c.LStickY2);
-        } else {
+        } else if (c.LStickY2 < -.05 && !intake.slideAtBottom()) {
+            intake.runSlide(c.LStickY2);
+        }else {
             intake.stopSlide();
         }
 
@@ -219,22 +222,25 @@ public class Robot {
     public static void rcOuttake(){
         //Slide Controls
         if(c.dpadUp2){
-            outtake.setBucketPos(1);
+            intake.tsTarget = intake.tsMiddle;
+            outtake.targetPos = outtake.highBucketSlidePos;
         } else if (c.dpadLeft2) {
-            outtake.setBucketPos(0);
+            intake.tsTarget = intake.tsMiddle;
+            outtake.targetPos = outtake.lowBucketSlidePos;
         } else if (c.dpadDown2){
-            //outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
-            outtake.setBucketPos(0.5);
+            intake.tsTarget = intake.tsMiddle;
+            outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
         }
         //Bucket Positions (for dumping)
         if (c.LTrigger2 > .25){
-            outtake.targetBucketPos = outtake.bucketRegPos;
-        } else if (c.RTrigger2 > .25){
             outtake.targetBucketPos = outtake.bucketOutPos;
+        } else {
+            outtake.targetBucketPos = outtake.bucketRegPos;
         }
 
-        //outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
-        //outtake.setBucketPos(outtake.targetBucketPos);
+//        outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
+        outtake.vslideToPow(c.RStickY2);
+        outtake.setBucketPos(outtake.targetBucketPos);
     }
 
 

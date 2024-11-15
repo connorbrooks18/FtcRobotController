@@ -13,31 +13,31 @@ public class ExampleAuto extends LinearOpMode {
         initAll(this);
         waitForStart();
 
-        ad.resetOdo(this);
+        // get to tall bucket
+        ad.forward( 4);
+        ad.goToHeading(180);
+        ad.strafe(-10);
+        ad.goToHeading(180);
 
 
-//        ad.strafe(this, 24);
-//        sleep(2500);
-        ad.forward(this,24);
-        sleep(1000);
-        ad.goToHeading(this,180);
-        sleep(500);
-        ad.strafe(this, 12);
-        sleep(1000);
-        ad.goToHeading(this,180);
-        sleep(500);
-        ad.forward(this, -24);
-        sleep(1000);
-        ad.goToHeading(this,180);
-        sleep(500);
-        ad.strafe(this,-6);
+        // OUT TAKE WHATEVER
 
-        while(opModeIsActive()) {
-//            telemetry.addData("Distance Gone X", ad.getX());
-//            telemetry.addData("Distance Gone Y", ad.getY());
-//
-//            telemetry.update();
-        }
+
+        // */
+
+
+        // GET near ascension
+        ad.strafe(5);
+        ad.goToHeading(180);
+        ad.forward(48);
+        ad.goToHeading(270);
+
+        // TOUCH LOWER BAR
+
+
+        //
+
+
 
 
 

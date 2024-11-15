@@ -26,8 +26,8 @@ public class Outtake {
     public double slidePower = .75; //temp value
 
     //Vars for Bucket Dumping Positions
-    public double bucketOutPos = 0; //temp value
-    public double bucketRegPos = 0.5; //temp value
+    public double bucketOutPos = .6; //temp value
+    public double bucketRegPos = 0.3; //temp value
 
     public double targetBucketPos = bucketRegPos;
 
@@ -36,11 +36,11 @@ public class Outtake {
     public Outtake(OpMode opMode){
         vslide = opMode.hardwareMap.get(DcMotor.class, "vslide");
         bucket = opMode.hardwareMap.get(Servo.class, "bucket");
-        claw = opMode.hardwareMap.get(Servo.class, "claw");
-        vslideBottom = opMode.hardwareMap.get(TouchSensor.class, "vslideLimitSwitch");
+//        claw = opMode.hardwareMap.get(Servo.class, "claw");
+//        vslideBottom = opMode.hardwareMap.get(TouchSensor.class, "vslideLimitSwitch");
 
-        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        vslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
 
@@ -66,9 +66,19 @@ public class Outtake {
         return vslide.getCurrentPosition();
     }
 
+    public double getBucketPos(){
+        return bucket.getPosition();
+    }
+
 
     public boolean slideAtBottom(){
         return vslideBottom.isPressed();
+    }
+
+    public void vslideToPow(double power){
+        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        vslide.setPower(power);
     }
 
     //Reset Vertical Slide
