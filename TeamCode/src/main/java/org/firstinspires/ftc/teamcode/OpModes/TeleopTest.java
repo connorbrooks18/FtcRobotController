@@ -54,6 +54,10 @@ public class TeleopTest extends LinearOpMode {
         while(opModeIsActive()){
             c.update();
 
+            if(intake.slideAtBottom()){
+                intake.resetHSlide();
+            }
+
 
             if(Math.abs(c.LStickY2) > .05){
                 outtake.vslideToPow(c.LStickY2);

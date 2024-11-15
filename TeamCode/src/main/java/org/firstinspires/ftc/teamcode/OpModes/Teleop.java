@@ -50,10 +50,10 @@ public class Teleop extends LinearOpMode {
             rcDriving();
             rcIntake();
 
-
             rcOuttake(); // Use later
 
             telemetry.addData("Hslide pos", intake.hslide.getCurrentPosition());
+            telemetry.addData("VSlide pos", outtake.vslide.getCurrentPosition());
 
             telemetry.update();
 

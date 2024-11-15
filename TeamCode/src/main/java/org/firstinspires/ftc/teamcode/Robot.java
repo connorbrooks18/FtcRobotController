@@ -188,6 +188,9 @@ public class Robot {
     }
 
     public static void rcIntake(){
+        if(intake.slideAtBottom()){
+            intake.resetHSlide();
+        }
         if(c.RBumper2){
             intake.runWheels(true);
         } else if(c.LBumper2){
@@ -239,7 +242,9 @@ public class Robot {
         }
 
 //        outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
-        outtake.vslideToPow(c.RStickY2);
+        if(outtake.vslide.getCurrentPosition() <= outtake.vSlideMax) {
+            outtake.vslide.setPower(c.RStickY2);
+        }
         outtake.setBucketPos(outtake.targetBucketPos);
     }
 

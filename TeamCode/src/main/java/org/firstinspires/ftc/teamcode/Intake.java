@@ -52,7 +52,7 @@ public class Intake {
         return hslideBottom.isPressed();
     }
 
-    public void resetVSlide(){
+    public void resetHSlide(){
         if(slideAtBottom()) {
             hslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             hslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
