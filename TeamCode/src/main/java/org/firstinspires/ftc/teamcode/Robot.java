@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Robot {
 
 
-    public static final double slow = .5;
+    public static final double slow = .65;
     public static final double fast = 1;
 
     public static DcMotor rf;
@@ -77,7 +77,7 @@ public class Robot {
 
         initDrive(opMode);
         initAccessories(opMode);
-        imu = new IMUControl(opMode);
+//        imu = new IMUControl(opMode);
 
         c = new Control(opMode);
         c.update();
@@ -106,7 +106,7 @@ public class Robot {
 
     public static double updateGear(){
 
-        if(c.options && !c.prevOptions){
+        if((c.options && !c.prevOptions) || (c.options2 && !c.prevOptions2)){
             gearprev = (gearprev == slow) ? fast : slow;
         }
         gear = (intake.getCurrentHPos() > 250) ? slow : gearprev;
@@ -188,9 +188,7 @@ public class Robot {
     }
 
     public static void rcIntake(){
-        if(intake.slideAtBottom()){
-            intake.resetHSlide();
-        }
+        intake.resetHSlide();
         if(c.RBumper2){
             intake.runWheels(true);
         } else if(c.LBumper2){
@@ -224,6 +222,7 @@ public class Robot {
     //Outtake Control
     public static void rcOuttake(){
         //Slide Controls
+        outtake.resetVSlide();
         if(c.dpadUp2){
             intake.tsTarget = intake.tsMiddle;
             outtake.targetPos = outtake.highBucketSlidePos;
@@ -235,15 +234,16 @@ public class Robot {
             outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
         }
         //Bucket Positions (for dumping)
-        if (c.LTrigger2 > .25){
+        if (c.LTrigger2 > .10){
             outtake.targetBucketPos = outtake.bucketOutPos;
         } else {
             outtake.targetBucketPos = outtake.bucketRegPos;
         }
 
-//        outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
-        if(outtake.vslide.getCurrentPosition() <= outtake.vSlideMax) {
-            outtake.vslide.setPower(c.RStickY2);
+        if (!(outtake.targetPos == 0 && Math.abs(outtake.targetPos - outtake.getVSlidePos()) < 5) || outtake.getVSlidePos() < 0) {
+            outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
+        } else {
+            outtake.stopVSlide();
         }
         outtake.setBucketPos(outtake.targetBucketPos);
     }

@@ -54,9 +54,7 @@ public class TeleopTest extends LinearOpMode {
         while(opModeIsActive()){
             c.update();
 
-            if(intake.slideAtBottom()){
-                intake.resetHSlide();
-            }
+            outtake.resetVSlide();
 
 
             if(Math.abs(c.LStickY2) > .05){
@@ -70,6 +68,7 @@ public class TeleopTest extends LinearOpMode {
 
             telemetry.addData("vslide encoder", outtake.getVSlidePos());
             telemetry.addData("bucket pos", outtake.getBucketPos());
+            telemetry.addData("vslide limit", outtake.slideAtBottom());
             telemetry.update();
 
         }

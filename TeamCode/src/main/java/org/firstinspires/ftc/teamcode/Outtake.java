@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -9,7 +11,7 @@ public class Outtake {
 
     //Objects
     public DcMotor vslide;
-        TouchSensor vslideBottom;
+    public TouchSensor vslideBottom;
     Servo bucket;
     Servo claw;
 
@@ -18,17 +20,17 @@ public class Outtake {
 
     //Vars for Slide Positions
     public int bottomSlidePos = 0;
-    public int highBucketSlidePos = 1; //temp value
-    public int lowBucketSlidePos = 2; //temp value
-    public final int vSlideMax = 1000;
+    public int highBucketSlidePos = 4150; //temp value
+    public int lowBucketSlidePos = 2300; //temp value
+    public final int V_SLIDE_MAX = 4375;
     public int targetPos = bottomSlidePos;
 
 
     public double slidePower = .75; //temp value
 
     //Vars for Bucket Dumping Positions
-    public double bucketOutPos = 0.6; //temp value (prev 0.6)
-    public double bucketRegPos = 0.3; //temp value (prev 0.3)
+    public double bucketOutPos = 0.225; //temp value (prev 0.6)
+    public double bucketRegPos = 0.6; //temp value (prev 0.3)
 
     public double targetBucketPos = bucketRegPos;
 
@@ -38,17 +40,14 @@ public class Outtake {
         vslide = opMode.hardwareMap.get(DcMotor.class, "vslide");
         bucket = opMode.hardwareMap.get(Servo.class, "bucket");
 //        claw = opMode.hardwareMap.get(Servo.class, "claw");
-//        vslideBottom = opMode.hardwareMap.get(TouchSensor.class, "vslideLimitSwitch");
+        vslideBottom = opMode.hardwareMap.get(TouchSensor.class, "vslidelimit");
 
-//        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        vslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        vslide.setDirection(DcMotorSimple.Direction.REVERSE);
+        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 
-    //Set Run Slide Power
-    public void runSlidePow(double power){
-        vslide.setPower(power);
-    }
 
     //Vertical Slide to Position
     public void vslideToPos(int pos, double power){
@@ -77,20 +76,28 @@ public class Outtake {
     }
 
     public void vslideToPow(double power){
-        vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(vslide.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
+            vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
         vslide.setPower(power);
 
     }
+
 
     //Reset Vertical Slide
     public void resetVSlide(){
         if(slideAtBottom()) {
             vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            vslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    }
+
+
+    public void stopVSlide(){
+        vslide.setPower(0);
     }
 
 
 
 }
+

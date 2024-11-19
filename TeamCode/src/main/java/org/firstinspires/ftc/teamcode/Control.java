@@ -51,7 +51,9 @@ public class Control {
     public Gamepad gm2;
 
     public boolean prevOptions;
+    public boolean prevOptions2;
     public boolean options;
+    public boolean options2;
 
 
     public Control(OpMode opMode) {
@@ -101,6 +103,9 @@ public class Control {
 
         prevOptions = options;
         options = gm1.options;
+
+        prevOptions2 = options2;
+        options2 = gm2.options;
 
 
 

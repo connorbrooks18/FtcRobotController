@@ -15,6 +15,14 @@ public class AutonomousDrive {
 
     private LinearOpMode opMode;
 
+    /*
+        180 is forward
+        90 is right
+        0/360 is backward
+        270 is left
+
+
+     */
 
 
     public AutonomousDrive(LinearOpMode opMode) {
@@ -108,7 +116,7 @@ public class AutonomousDrive {
         double min = .15;
         if(distanceToGo > 0) {
             return Math.max(Math.min(distanceToGo / slope, max), min);
-        }else{
+        } else {
             return Math.min(Math.max(distanceToGo / slope, -max), -min);
         }
     }
@@ -140,7 +148,7 @@ public class AutonomousDrive {
 
     public void resetOdo(LinearOpMode opMode){
         odo.recalibrateIMU();
-        opMode.sleep(300);
+        opMode.sleep(500);
         odo.resetPosAndIMU();
     }
 

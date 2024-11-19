@@ -23,18 +23,18 @@ public class Intake {
 
     //Vars
     double inSlidePos = 0;
-    double hSlideMax = 1470;
+    double hSlideMax = 1800;
 
-    public double tsDown = .30; // siting position of transfer sevo
+    public double tsDown = .28; //
     public double tsMiddle = .70;
-    public double tsUp = .85; // position that dumps the sample
+    public double tsUp = .82; // position that dumps the sample
     public double tsTarget = tsUp;
 
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
 
-        wheelServo = opMode.hardwareMap.get(Servo.class, "servoWheel");
-        transferServo = opMode.hardwareMap.get(Servo.class, "servoTransfer");
+        wheelServo = opMode.hardwareMap.get(Servo.class, "servoWheelBlue");
+        transferServo = opMode.hardwareMap.get(Servo.class, "servoTransferWhite");
 
 //        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
 //        ds = (DistanceSensor)cs;
@@ -85,15 +85,15 @@ public class Intake {
 
 
 
-    public SampleColor getColor(){
-        if(cs.red() > 180) return SampleColor.RED;
-        if(cs.blue() > 180) return SampleColor.BLUE;
-        return SampleColor.YELLOW;
-    }
-
-    public boolean detectSample(){
-        return (ds.getDistance(DistanceUnit.MM) < 15);
-    }
+//    public SampleColor getColor(){
+//        if(cs.red() > 100) return SampleColor.RED;
+//        if(cs.blue() > 100) return SampleColor.BLUE;
+//        return SampleColor.YELLOW;
+//    }
+//
+//    public boolean detectSample(){
+//        return (ds.getDistance(DistanceUnit.MM) < 15);
+//    }
 
 
 
