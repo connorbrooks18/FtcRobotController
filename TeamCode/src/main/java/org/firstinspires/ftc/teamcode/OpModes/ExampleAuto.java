@@ -14,34 +14,7 @@ public class ExampleAuto extends LinearOpMode {
         waitForStart();
 
         // get to tall bucket
-        ad.forward( 4);
-        ad.goToHeading(180);
-        ad.strafe(-10);
-        ad.goToHeading(180);
-
-
-        // OUT TAKE WHATEVER
-
-
-        // */
-
-
-        // GET near ascension
-        ad.strafe(5);
-        ad.goToHeading(180);
-        ad.forward(48);
-        ad.goToHeading(270);
-
-        // TOUCH LOWER BAR
-
-
-        //
-
-
-
-
-
-
-
+        ad.forward( 24);
+        ad.forward(-24);
     }
 }

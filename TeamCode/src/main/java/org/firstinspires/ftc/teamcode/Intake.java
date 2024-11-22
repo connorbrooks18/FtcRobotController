@@ -25,10 +25,11 @@ public class Intake {
     double inSlidePos = 0;
     double hSlideMax = 1800;
 
-    public double tsDown = .28; //
-    public double tsMiddle = .70;
-    public double tsUp = .82; // position that dumps the sample
-    public double tsTarget = tsUp;
+    public double tsDown = .25; //
+    public double tsMiddle = .575;
+    public double tsUp = .77; // position that dumps the sample
+    public double tsTarget = tsMiddle;
+
 
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
@@ -64,6 +65,19 @@ public class Intake {
         hslide.setPower(power);
 
     }
+    public void hslideToPow(double power){
+        if(hslide.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
+            hslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+        hslide.setPower(power);
+    }
+
+    public void hslideToPos(int pos, double power){
+        hslide.setTargetPosition(pos);
+        hslide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hslide.setPower(power);
+    }
+
 
     public void stopSlide(){
         hslide.setPower(0);

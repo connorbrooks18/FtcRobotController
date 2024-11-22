@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class AutonomousDrive {
 
 
-    public double errorTolerance = 0.01;
+    public double errorTolerance = 0.015;
 
     private GoBildaPinpointDriver odo;
 
@@ -39,33 +39,40 @@ public class AutonomousDrive {
     }
 
     public void forward(double distanceTotal) {
+        double startTime = this.opMode.time;
         double startpos = getX();
         double distanceToGo = distanceTotal;
-        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.02) && opMode.opModeIsActive()) {
+        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.05) && opMode.opModeIsActive()) {
+            if(isStuck(distanceToGo, distanceTotal)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
             double power = powerCurving(distanceToGo);
             Robot.drive(power, power, power, power);
             this.outputDriveInfo(distanceToGo, distanceTotal, power);
+            if(this.opMode.time - startTime > 4) break;
 
         }
+
         while (Math.abs(distanceToGo) > this.errorTolerance && opMode.opModeIsActive()) {
+            if(isStuck(distanceToGo, distanceTotal)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
             double power = powerCurving(distanceToGo)/1.5;
             Robot.drive(power, power, power, power);
             this.outputDriveInfo(distanceToGo, distanceTotal, power);
+            if(this.opMode.time - startTime > 5) break;
 
         }
 
         Robot.drive(0, 0, 0, 0);
+
         opMode.sleep(250);
     }
     public void strafe(double distanceTotal){
         double startpos = getY();
         double distanceToGo = distanceTotal;
-        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.05) && opMode.opModeIsActive()) {
-
+        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.075) && opMode.opModeIsActive()) {
+            if(isStuck(distanceToGo, distanceTotal))return;
             distanceToGo = distanceTotal - (getY() - startpos);
             double power = powerCurving(distanceToGo);
             Robot.drive(-power, power, -power, power);
@@ -73,8 +80,8 @@ public class AutonomousDrive {
 
         }
 
-        while (Math.abs(distanceToGo) > this.errorTolerance + 0.05 && opMode.opModeIsActive()) {
-
+        while (Math.abs(distanceToGo) > this.errorTolerance + .025 && opMode.opModeIsActive()) {
+            if(isStuck(distanceToGo, distanceTotal)) return;
             distanceToGo = distanceTotal - (getY() - startpos);
             double power = powerCurving(distanceToGo) / 2;
             Robot.drive(-power, power, -power, power);
@@ -113,7 +120,7 @@ public class AutonomousDrive {
     public static double powerCurving(double distanceToGo){
         double slope = 18;
         double max = .80;
-        double min = .15;
+        double min = .175;
         if(distanceToGo > 0) {
             return Math.max(Math.min(distanceToGo / slope, max), min);
         } else {
@@ -152,13 +159,37 @@ public class AutonomousDrive {
         odo.resetPosAndIMU();
     }
 
+    //Returns False if robot is not moving substantially
+    public boolean isMoving(){
+        return Math.abs(odo.getVelocity().getX(DistanceUnit.INCH)) > 0.005
+                || Math.abs(odo.getVelocity().getY(DistanceUnit.INCH)) > 0.005
+                ||  Math.abs(odo.getVelocity().getHeading(AngleUnit.DEGREES)) > 0.005;
+    }
+    public boolean isStuck(double distanceToGo, double distanceTotal){
+        return  !isMoving() && Math.abs(distanceToGo) < 1.5;
+    }
+
+    /*
+    public void goToPoint(double targetX, double targetY){
+        double targetXDistance = targetX - odo.getPosition().getX(DistanceUnit.INCH);
+        double targetYDistance = targetY - odo.getPosition().getY(DistanceUnit.INCH);
+
+        double r = Math.hypot(c.LStickX, )
+        double angle = Math.atan2(targetYDistance, targetXDistance);
+    }
+
+     */
+
+
+
     public void outputDriveInfo(double distanceToGo, double distanceTotal, double power){
         opMode.telemetry.addData("distanceToGo", distanceToGo);
         opMode.telemetry.addData("distanceTotal", distanceTotal);
         opMode.telemetry.addData("power", power);
-        opMode.telemetry.addData("get x", this.getX());
-        opMode.telemetry.addData("get y", this.getY());
+//        opMode.telemetry.addData("get x", this.getX());
+//        opMode.telemetry.addData("get y", this.getY());
         opMode.telemetry.addData("heading ", odo.getPosition().getHeading(AngleUnit.DEGREES));
+        opMode.telemetry.addData("is moving", isMoving());
         opMode.telemetry.update();
     }
 

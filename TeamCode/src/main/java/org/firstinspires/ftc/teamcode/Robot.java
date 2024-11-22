@@ -39,6 +39,8 @@ public class Robot {
     public static IMUControl imu;
     public static AprilTagPipeline aptag;
 
+    public static boolean foundBottom = false;
+
 
     public static void initDrive(OpMode opmode) {
         rf = opmode.hardwareMap.get(DcMotor.class, "rf");
@@ -66,9 +68,8 @@ public class Robot {
     public static void initAccessories(OpMode opMode){
         //camServo = opMode.hardwareMap.get(Servo.class, "camservo");
         intake = new Intake(opMode);
-        intake.setTransferServo();
         outtake = new Outtake(opMode);
-
+        foundBottom = false;
     }
 
 
@@ -172,7 +173,17 @@ public class Robot {
             v2 = sp;
             v3 = sp;
             v4 = -sp;
-        } else {
+        } else if(c.RBumper1){
+            v1 = sp;
+            v2 = -sp;
+            v3 = sp;
+            v4 = -sp;
+        }else if(c.LBumper1){
+            v1 = -sp;
+            v2 = sp;
+            v3 = -sp;
+            v4 = sp;
+        }else {
             v1 = 0;
             v2 = 0;
             v3 = 0;
@@ -189,7 +200,7 @@ public class Robot {
 
     public static void rcIntake(){
         intake.resetHSlide();
-        if(c.RBumper2){
+        if(c.RBumper2 || intake.transferServo.getPosition() == intake.tsUp ){
             intake.runWheels(true);
         } else if(c.LBumper2){
             intake.runWheels(false);
@@ -201,7 +212,7 @@ public class Robot {
             intake.tsTarget = intake.tsDown;
         }else if(c.b2){
             intake.tsTarget = intake.tsMiddle;
-        }else if(c.y2){
+        }else if(c.y2 && intake.hslide.getCurrentPosition() < 80){
             intake.tsTarget = intake.tsUp;
         }
         intake.setTransferServo();
@@ -211,7 +222,7 @@ public class Robot {
 
         if(c.LStickY2 > .05 && intake.getCurrentHPos() < intake.hSlideMax){
             intake.runSlide(c.LStickY2);
-        } else if (c.LStickY2 < -.05 && !intake.slideAtBottom()) {
+        } else if (c.LStickY2 < -.05) {
             intake.runSlide(c.LStickY2);
         }else {
             intake.stopSlide();
@@ -221,18 +232,45 @@ public class Robot {
 
     //Outtake Control
     public static void rcOuttake(){
+
+
         //Slide Controls
         outtake.resetVSlide();
-        if(c.dpadUp2){
-            intake.tsTarget = intake.tsMiddle;
-            outtake.targetPos = outtake.highBucketSlidePos;
-        } else if (c.dpadLeft2) {
-            intake.tsTarget = intake.tsMiddle;
-            outtake.targetPos = outtake.lowBucketSlidePos;
-        } else if (c.dpadDown2){
-            intake.tsTarget = intake.tsMiddle;
-            outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
+        if(!foundBottom && outtake.slideAtBottom()) {
+            foundBottom = outtake.slideAtBottom();
+            outtake.stopVSlide();
         }
+        if(foundBottom) {
+            if (c.dpadUp2) {
+                intake.tsTarget = intake.tsMiddle;
+                outtake.targetPos = outtake.highBucketSlidePos;
+            } else if (c.dpadLeft2) {
+                intake.tsTarget = intake.tsMiddle;
+                outtake.targetPos = outtake.lowBucketSlidePos;
+            } else if (c.dpadDown2) {
+                intake.tsTarget = intake.tsMiddle;
+                outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
+            } else if (c.dpadRight2) {
+                intake.tsTarget = intake.tsMiddle;
+                outtake.targetPos = outtake.touchBarSlidePos;
+            }
+
+
+            if (!(outtake.targetPos == 0 && Math.abs(outtake.targetPos - outtake.getVSlidePos()) < 5) || outtake.getVSlidePos() < 0) {
+                outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
+            } else {
+                outtake.stopVSlide();
+            }
+        } else {
+            if(c.dpadUp2){
+                outtake.vslideToPow(outtake.slidePower);
+            } else if(c.dpadDown2){
+                outtake.vslideToPow(-outtake.slidePower);
+            } else {
+                outtake.stopVSlide();
+            }
+        }
+
         //Bucket Positions (for dumping)
         if (c.LTrigger2 > .10){
             outtake.targetBucketPos = outtake.bucketOutPos;
@@ -240,12 +278,16 @@ public class Robot {
             outtake.targetBucketPos = outtake.bucketRegPos;
         }
 
-        if (!(outtake.targetPos == 0 && Math.abs(outtake.targetPos - outtake.getVSlidePos()) < 5) || outtake.getVSlidePos() < 0) {
-            outtake.vslideToPos(outtake.targetPos, outtake.slidePower);
-        } else {
-            outtake.stopVSlide();
-        }
+
         outtake.setBucketPos(outtake.targetBucketPos);
+
+//        if(c.RStickY2 > .01 && outtake.getVSlidePos() < outtake.V_SLIDE_MAX){
+//            outtake.vslide.setPower(c.RStickY2);
+//        } else if (c.RStickY2 < -.01 && !outtake.slideAtBottom()) {
+//            outtake.vslide.setPower(c.RStickY2);
+//        }else {
+//            outtake.vslide.setPower(0);
+//        }
     }
 
 
