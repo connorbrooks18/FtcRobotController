@@ -13,8 +13,10 @@ public class ExampleAuto extends LinearOpMode {
         initAll(this);
         waitForStart();
 
-        // get to tall bucket
-        ad.forward( 24);
-        ad.forward(-24);
+        ad.goToPointConstantHeading(12, 24);
+       // ad.goToHeading(180);
+        ad.goToPointConstantHeading(6, 10);
+        ad.goToPointConstantHeading(0, 0);
+        sleep(3000);
     }
 }

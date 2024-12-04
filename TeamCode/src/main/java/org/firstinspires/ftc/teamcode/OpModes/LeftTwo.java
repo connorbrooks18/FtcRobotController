@@ -8,7 +8,7 @@ import static org.firstinspires.ftc.teamcode.Robot.outtake;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous (name="Left Two Auto")
+@Autonomous (name="Left Two Auto", preselectTeleOp="Telop")
 public class LeftTwo extends LinearOpMode {
 
 
@@ -58,31 +58,31 @@ public class LeftTwo extends LinearOpMode {
 
         }
 
-        ad.strafe(-3);
+        ad.strafe(-2.5);
 
         intake.hslideToPos(1700, .75);
-        sleep(750);
+        sleep(450);
         intake.tsTarget = intake.tsDown;
         intake.setTransferServo();
 
         intake.runWheels(true);
         intake.hslideToPos(1800, .75);
 
-        sleep(2500);
+        sleep(2000);
 
         intake.tsTarget = intake.tsMiddle;
         intake.setTransferServo();
 
-        intake.hslideToPos(0, .75);
-        sleep(2000);
+        intake.hslideToPos(-200, .75);
+        sleep(1000);
 
-        ad.strafe(1.5);
+        ad.strafe(1.75);
 
 
         ad.goToHeading(135);
         intake.tsTarget = intake.tsUp;
         intake.setTransferServo();
-        sleep(2000);
+        sleep(1500);
         intake.runWheels(false);
 
 
@@ -102,15 +102,17 @@ public class LeftTwo extends LinearOpMode {
         sleep(100);
 
 
+        intake.hslideToPow(0);
         outtake.vslideToPos(outtake.highBucketSlidePos, outtake.slidePower);
         sleep(2500);
 
-        ad.forward(-2);
+        ad.forward(-3);
 
         outtake.setBucketPos(outtake.bucketOutPos);
         sleep(1000);
         outtake.setBucketPos(outtake.bucketRegPos);
-        ad.forward(2);
+        //Back up
+        ad.forward(3.0);
         outtake.vslideToPos(outtake.bottomSlidePos, outtake.slidePower);
         sleep(3000);
 

@@ -82,7 +82,7 @@ public class CameraPipeline extends OpenCvPipeline {
 //        telemetry.addData("Park? ", (park == 0)?"No Park":"Do Park");
 //        telemetry.update();
 
-        return image;
+        return input;
     }
 
     public Side getSide() {return side;}

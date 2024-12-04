@@ -25,9 +25,9 @@ public class Intake {
     double inSlidePos = 0;
     double hSlideMax = 1800;
 
-    public double tsDown = .25; //
+    public double tsDown = .22; //
     public double tsMiddle = .575;
-    public double tsUp = .77; // position that dumps the sample
+    public double tsUp = .74; // position that dumps the sample
     public double tsTarget = tsMiddle;
 
 

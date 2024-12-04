@@ -30,6 +30,7 @@ public class Robot {
 
 
     public static Control c;
+    public static Control prevC;
 
 
     public static Intake intake;
@@ -83,6 +84,8 @@ public class Robot {
         c = new Control(opMode);
         c.update();
 
+        prevC = (Control)c.clone();
+
         ad = new AutonomousDrive((LinearOpMode) opMode);
 
         aptag = new AprilTagPipeline(camServo,rf,rb,lf,lb);
@@ -107,10 +110,11 @@ public class Robot {
 
     public static double updateGear(){
 
-        if((c.options && !c.prevOptions) || (c.options2 && !c.prevOptions2)){
+        if((c.options && !prevC.options) || (c.options2 && !prevC.options2)){
             gearprev = (gearprev == slow) ? fast : slow;
         }
-        gear = (intake.getCurrentHPos() > 250) ? slow : gearprev;
+        gear = (intake.getCurrentHPos() > 500) ? slow : gearprev;
+        //gear = (outtake.getVSlidePos() > outtake.touchBarSlidePos) ? slow : gearprev;
 
         return gear;
     }
@@ -128,8 +132,12 @@ public class Robot {
         double sp = .25;
 
 
+
         if (Math.abs(c.LStickX) > 0.05 || Math.abs(c.LStickY) > 0.05 || Math.abs(c.RStickX) > 0.05) {
 
+            if(intake.transferServo.getPosition() == intake.tsDown){
+                c.RStickX = 0;
+            }
 
             double r = Math.hypot(c.LStickX, c.LStickY) * gear;
             double robotAngle = Math.atan2(c.LStickY, c.LStickX) - Math.PI / 4;
@@ -199,7 +207,7 @@ public class Robot {
     }
 
     public static void rcIntake(){
-        intake.resetHSlide();
+        //intake.resetHSlide();
         if(c.RBumper2 || intake.transferServo.getPosition() == intake.tsUp ){
             intake.runWheels(true);
         } else if(c.LBumper2){
@@ -208,11 +216,18 @@ public class Robot {
             intake.stopWheels();
         }
 
-        if(c.a2){
+//        if(c.a2){
+//            intake.tsTarget = intake.tsDown;
+//        }else if(c.b2){
+//            intake.tsTarget = intake.tsMiddle;
+//        }else if(c.y2 && intake.hslide.getCurrentPosition() < 80){
+//            intake.tsTarget = intake.tsUp;
+//        }
+        if(c.RStickY2 < -.5){
             intake.tsTarget = intake.tsDown;
-        }else if(c.b2){
+        }else if(Math.abs(c.RStickX2) > .5){
             intake.tsTarget = intake.tsMiddle;
-        }else if(c.y2 && intake.hslide.getCurrentPosition() < 80){
+        }else if(c.RStickY2 > .5 && intake.hslide.getCurrentPosition() < 80){
             intake.tsTarget = intake.tsUp;
         }
         intake.setTransferServo();

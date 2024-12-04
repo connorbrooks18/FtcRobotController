@@ -44,6 +44,8 @@ public class Teleop extends LinearOpMode {
         initAll(this);
 
         waitForStart();
+        intake.tsTarget = intake.tsMiddle;
+        intake.setTransferServo();
         while(opModeIsActive()){
             c.update();
 
@@ -52,19 +54,27 @@ public class Teleop extends LinearOpMode {
 
             rcOuttake(); // Use later
 
-            telemetry.addData("Hslide pos", intake.hslide.getCurrentPosition());
-            telemetry.addData("Hslide pow", intake.hslide.getPower());
+//            telemetry.addData("Hslide pos", intake.hslide.getCurrentPosition());
+//            telemetry.addData("Hslide pow", intake.hslide.getPower());
 //            telemetry.addData("VSlide pos", outtake.vslide.getCurrentPosition());
 //            telemetry.addData("VSlide power", outtake.vslide.getPower());
 //            telemetry.addData("VSlide target", outtake.targetPos);
 //            telemetry.addData("VSlide mode", outtake.vslide.getMode());
 //            telemetry.addData("Vslide bottom", outtake.slideAtBottom());
 //            telemetry.addData("Vslide bottom value", outtake.vslideBottom.getValue());
-            telemetry.addData("found bottom", foundBottom);
-            telemetry.addData("Time is ",  this.time);
-
+//            telemetry.addData("found bottom", foundBottom);
+//            telemetry.addData("Time is ",  this.time);
 //            telemetry.addData("Color Seen: ", intake.getColor());
+
+
+            telemetry.addData("right stick x 2", c.RStickX2);
+            telemetry.addData("right stick y 2", c.RStickY2);
+            telemetry.addData("gear", gear);
+            telemetry.addData("current pos intake", intake.tsTarget);
             telemetry.update();
+
+
+            prevC = c.clone();
 
         }
     }

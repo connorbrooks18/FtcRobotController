@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 
-public class Control {
+public class Control implements Cloneable{
     public boolean LBumper1;
     public boolean RBumper1;
 
@@ -50,8 +52,6 @@ public class Control {
     public Gamepad gm1;
     public Gamepad gm2;
 
-    public boolean prevOptions;
-    public boolean prevOptions2;
     public boolean options;
     public boolean options2;
 
@@ -101,14 +101,20 @@ public class Control {
         dpadRight2 = gm2.dpad_right;
         dpadLeft2 = gm2.dpad_left;
 
-        prevOptions = options;
         options = gm1.options;
-
-        prevOptions2 = options2;
         options2 = gm2.options;
 
 
 
 
+    }
+
+    @Override
+    public Control clone() {
+        try {
+            return (Control)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

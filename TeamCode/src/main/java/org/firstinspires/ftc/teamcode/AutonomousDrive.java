@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class AutonomousDrive {
 
@@ -33,6 +34,7 @@ public class AutonomousDrive {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         this.resetOdo((LinearOpMode)opMode);
+        odo.setPosition(new Pose2D(DistanceUnit.INCH,8.5,36,AngleUnit.DEGREES, 180));
         ((LinearOpMode)opMode).sleep(250);
 
 
@@ -43,7 +45,7 @@ public class AutonomousDrive {
         double startpos = getX();
         double distanceToGo = distanceTotal;
         while (Math.abs(distanceToGo) > (this.errorTolerance + 0.05) && opMode.opModeIsActive()) {
-            if(isStuck(distanceToGo, distanceTotal)) return;
+            if(isStuck(distanceToGo)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
             double power = powerCurving(distanceToGo);
@@ -54,7 +56,7 @@ public class AutonomousDrive {
         }
 
         while (Math.abs(distanceToGo) > this.errorTolerance && opMode.opModeIsActive()) {
-            if(isStuck(distanceToGo, distanceTotal)) return;
+            if(isStuck(distanceToGo)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
             double power = powerCurving(distanceToGo)/1.5;
@@ -72,7 +74,7 @@ public class AutonomousDrive {
         double startpos = getY();
         double distanceToGo = distanceTotal;
         while (Math.abs(distanceToGo) > (this.errorTolerance + 0.075) && opMode.opModeIsActive()) {
-            if(isStuck(distanceToGo, distanceTotal))return;
+            if(isStuck(distanceToGo))return;
             distanceToGo = distanceTotal - (getY() - startpos);
             double power = powerCurving(distanceToGo);
             Robot.drive(-power, power, -power, power);
@@ -81,9 +83,9 @@ public class AutonomousDrive {
         }
 
         while (Math.abs(distanceToGo) > this.errorTolerance + .025 && opMode.opModeIsActive()) {
-            if(isStuck(distanceToGo, distanceTotal)) return;
+            if(isStuck(distanceToGo)) return;
             distanceToGo = distanceTotal - (getY() - startpos);
-            double power = powerCurving(distanceToGo) / 2;
+            double power = powerCurving(distanceToGo) / 1.5;
             Robot.drive(-power, power, -power, power);
             this.outputDriveInfo(distanceToGo, distanceTotal, power);
 
@@ -138,6 +140,19 @@ public class AutonomousDrive {
         }
     }
 
+    public static double powerCurvingOmni(double distanceToGo){
+        double slope = 18;
+        double max = .90;
+        double min = .20;
+        if(distanceToGo > 0) {
+            return Math.max(Math.min(distanceToGo / slope, max), min);
+        } else {
+            return Math.min(Math.max(distanceToGo / slope, -max), -min);
+        }
+    }
+
+
+
     public double getX(){
         odo.update();
         return odo.getPosition().getX(DistanceUnit.INCH);
@@ -165,20 +180,125 @@ public class AutonomousDrive {
                 || Math.abs(odo.getVelocity().getY(DistanceUnit.INCH)) > 0.005
                 ||  Math.abs(odo.getVelocity().getHeading(AngleUnit.DEGREES)) > 0.005;
     }
-    public boolean isStuck(double distanceToGo, double distanceTotal){
-        return  !isMoving() && Math.abs(distanceToGo) < 1.5;
+    public boolean isStuck(double distanceToGo){
+        return  !isMoving() && Math.abs(distanceToGo) < 1.75;
     }
 
-    /*
-    public void goToPoint(double targetX, double targetY){
+    public void goToPoint(double targetX, double targetY, double degrees){
+        // try switching from atan2 to atan
+        //Get X and Y Distance and Total Distance
         double targetXDistance = targetX - odo.getPosition().getX(DistanceUnit.INCH);
         double targetYDistance = targetY - odo.getPosition().getY(DistanceUnit.INCH);
-
-        double r = Math.hypot(c.LStickX, )
+        double totalDistance = Math.hypot(targetYDistance, targetXDistance);
         double angle = Math.atan2(targetYDistance, targetXDistance);
+
+        //Get Heading
+        degrees = limitTurn(degrees);
+        double currentHeading = getHeading();
+        double angelTogo = degrees - currentHeading;
+        double powerTurning =  powerCurvingTurn(angelTogo);
+        double power = powerCurving(totalDistance);
+
+        double v1 = totalDistance * Math.sin(angle) + powerTurning; //lf // was cos
+        double v2 = totalDistance * Math.cos(angle) - powerTurning; //rf // was sin
+        double v3 = totalDistance * Math.cos(angle) + powerTurning; //lb // was sin
+        double v4 = totalDistance * Math.sin(angle) - powerTurning; //rb // was
+
+        while(totalDistance > this.errorTolerance){
+
+            targetXDistance = targetX - odo.getPosition().getX(DistanceUnit.INCH);
+            targetYDistance = targetY - odo.getPosition().getY(DistanceUnit.INCH);
+            totalDistance = Math.hypot(targetYDistance, targetXDistance);
+            angle = Math.atan2(targetYDistance, targetXDistance);
+
+
+            degrees = limitTurn(degrees);
+            currentHeading = getHeading();
+            angelTogo = degrees - currentHeading;
+            powerTurning =  powerCurving(angelTogo)/2;
+            power = powerCurving(totalDistance);
+
+
+            v1 = power * Math.sin(angle) + powerTurning; //lf // was cos
+            v2 = power * Math.cos(angle) - powerTurning; //rf // was sin
+            v3 = power * Math.cos(angle) + powerTurning; //lb // was sin
+            v4 = power * Math.sin(angle) - powerTurning; //rb // was
+
+            Robot.drive(v2,v4,v3,v1);
+
+        }
+
+
+        this.goToHeading(degrees);
+
+        Robot.drive(0,0,0,0);
+
+        opMode.sleep(250);
+
+
     }
 
-     */
+    public void goToPointConstantHeading(double targetX, double targetY){
+        // try switching from atan2 to atan
+        //Get X and Y Distance and Total Distance
+        odo.update();
+        double targetYDistance = targetY - getY();
+        double targetXDistance = targetX - getX();
+        double totalDistance = Math.hypot(targetYDistance, targetXDistance);
+        double angle = Math.atan2(targetYDistance, targetXDistance);
+
+        //Get Heading
+        double power;
+
+        double v1; //lf // was cos
+        double v2; //rf // was sin
+        double v3; //lb // was sin
+        double v4; //rb // was
+
+        while(Math.abs(targetYDistance) > this.errorTolerance && Math.abs(targetYDistance) > this.errorTolerance){
+            odo.update();
+
+            if(isStuck(totalDistance))return;
+
+            targetYDistance = (targetY - odo.getPosition().getY(DistanceUnit.INCH));
+            targetXDistance = (targetX - odo.getPosition().getX(DistanceUnit.INCH));
+            totalDistance = Math.hypot(targetYDistance, targetXDistance);
+            angle = Math.atan2(targetYDistance, targetXDistance) + Math.PI/4;
+
+
+            power = powerCurvingOmni(totalDistance);
+
+
+            v1 = power * Math.sin(angle); //lf // was cos
+            v2 = power * Math.cos(angle); //rf // was sin
+            v3 = power * Math.cos(angle); //lb // was sin
+            v4 = power * Math.sin(angle); //rb // was
+
+            Robot.drive(v2,v4,v3,v1);
+
+            opMode.telemetry.addData("get x", getX());
+            opMode.telemetry.addData("get y", getY());
+
+            opMode.telemetry.addData("LF", v1);
+            opMode.telemetry.addData("RF", v2);
+            opMode.telemetry.addData("LB", v3);
+            opMode.telemetry.addData("RB", v4);
+            opMode.telemetry.update();
+        }
+
+
+
+
+        Robot.drive(0,0,0,0);
+
+        opMode.sleep(250);
+
+
+
+    }
+
+
+
 
 
 
