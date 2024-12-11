@@ -12,11 +12,16 @@ public class ExampleAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         initAll(this);
         waitForStart();
+        telemetry.addData("startx", ad.getX());
+        telemetry.addData("starty", ad.getY());
+        telemetry.update();
+        sleep(200);
+        ad.goToPoint(36, 24,180);
+        sleep(5000);
+        ad.goToPoint(8.5,36,0);
 
-        ad.goToPointConstantHeading(12, 24);
-       // ad.goToHeading(180);
-        ad.goToPointConstantHeading(6, 10);
-        ad.goToPointConstantHeading(0, 0);
+
+
         sleep(3000);
     }
 }

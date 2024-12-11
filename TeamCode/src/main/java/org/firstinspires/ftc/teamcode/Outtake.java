@@ -32,7 +32,7 @@ public class Outtake {
     //Vars for Bucket Dumping Positions
     public double bucketAutoTouch = 0.0;
     public double bucketOutPos = 0.225; //temp value (prev 0.6)
-    public double bucketRegPos = 0.67; //temp value (prev 0.3)
+    public double bucketRegPos = 0.635; //temp value (prev 0.3)
 
     public double targetBucketPos = bucketRegPos;
 

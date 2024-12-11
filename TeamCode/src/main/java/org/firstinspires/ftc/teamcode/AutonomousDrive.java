@@ -18,7 +18,7 @@ public class AutonomousDrive {
 
     /*
         180 is forward
-        90 is right
+        90 is left
         0/360 is backward
         270 is left
 
@@ -32,10 +32,10 @@ public class AutonomousDrive {
         odo = opMode.hardwareMap.get(GoBildaPinpointDriver.class,"odo");
         odo.setOffsets(139.5, 101.6);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        this.resetOdo((LinearOpMode)opMode);
-        odo.setPosition(new Pose2D(DistanceUnit.INCH,8.5,36,AngleUnit.DEGREES, 180));
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        resetOdo((LinearOpMode)opMode);
         ((LinearOpMode)opMode).sleep(250);
+
 
 
     }
@@ -44,7 +44,7 @@ public class AutonomousDrive {
         double startTime = this.opMode.time;
         double startpos = getX();
         double distanceToGo = distanceTotal;
-        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.05) && opMode.opModeIsActive()) {
+        while (Math.abs(distanceToGo) > (this.errorTolerance + 0.13) && opMode.opModeIsActive()) {
             if(isStuck(distanceToGo)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
@@ -55,11 +55,11 @@ public class AutonomousDrive {
 
         }
 
-        while (Math.abs(distanceToGo) > this.errorTolerance && opMode.opModeIsActive()) {
+        while (Math.abs(distanceToGo) > this.errorTolerance + .1 && opMode.opModeIsActive()) {
             if(isStuck(distanceToGo)) return;
 
             distanceToGo = distanceTotal - (getX() - startpos);
-            double power = powerCurving(distanceToGo)/1.5;
+            double power = powerCurving(distanceToGo);
             Robot.drive(power, power, power, power);
             this.outputDriveInfo(distanceToGo, distanceTotal, power);
             if(this.opMode.time - startTime > 5) break;
@@ -68,7 +68,7 @@ public class AutonomousDrive {
 
         Robot.drive(0, 0, 0, 0);
 
-        opMode.sleep(250);
+        opMode.sleep(150);
     }
     public void strafe(double distanceTotal){
         double startpos = getY();
@@ -92,23 +92,28 @@ public class AutonomousDrive {
         }
 
         Robot.drive(0, 0, 0, 0);
-        opMode.sleep(250);
+        opMode.sleep(150);
 
     }
 
-    public double limitTurn(double x){
-        return Math.min(360.0,Math.max(0.0, x));
-    }
 
     public void goToHeading(double degrees){
-        degrees = limitTurn(degrees);
+        //degrees = limitTurn(degrees);
         double currentHeading = getHeading();
         double angelTogo = degrees - currentHeading;
         while(opMode.opModeIsActive() && Math.abs(angelTogo) > .5){
             currentHeading =  getHeading();
+
             angelTogo = degrees - currentHeading;
+
+            if(degrees >= 0 && degrees < 90 && getHeading() > 180){
+                angelTogo =  degrees + (360 - currentHeading);
+            }
+
             double power =  powerCurvingTurn(angelTogo);
+
             Robot.drive(power, power, -power, -power);
+
 
             opMode.telemetry.addData("Current Heading", currentHeading);
             opMode.telemetry.addData("Angle To go", angelTogo);
@@ -116,7 +121,43 @@ public class AutonomousDrive {
 
         }
         Robot.drive(0, 0, 0, 0);
-        opMode.sleep(250);
+        opMode.sleep(150);
+    }
+
+    public void goToHeading2(double degrees){
+        if(degrees < 0) {
+            degrees = (360 + (degrees % -360));
+        }else{
+            degrees = degrees % 360;
+        }
+        double currentHeading = getHeading();
+        double angleTogo = degrees - currentHeading;
+        while(opMode.opModeIsActive() && Math.abs(angleTogo) > .5){
+            currentHeading =  getHeading();
+
+            angleTogo = degrees - currentHeading;
+
+            if(Math.abs(angleTogo) > 180){
+                if(currentHeading < 180){
+                    angleTogo = -((currentHeading) + (360 - degrees));
+                }else{
+                    angleTogo = (degrees + (360 - currentHeading));
+                }
+            }
+
+            double power =  powerCurvingTurn(angleTogo);
+
+            Robot.drive(power, power, -power, -power);
+
+
+
+            opMode.telemetry.addData("Current Heading", currentHeading);
+            opMode.telemetry.addData("Angle To go", angleTogo);
+            opMode.telemetry.update();
+
+        }
+        Robot.drive(0, 0, 0, 0);
+        opMode.sleep(150);
     }
 
     public static double powerCurving(double distanceToGo){
@@ -143,15 +184,13 @@ public class AutonomousDrive {
     public static double powerCurvingOmni(double distanceToGo){
         double slope = 18;
         double max = .90;
-        double min = .20;
+        double min = .25;
         if(distanceToGo > 0) {
             return Math.max(Math.min(distanceToGo / slope, max), min);
         } else {
             return Math.min(Math.max(distanceToGo / slope, -max), -min);
         }
     }
-
-
 
     public double getX(){
         odo.update();
@@ -165,6 +204,7 @@ public class AutonomousDrive {
 
     public double getHeading(){
         odo.update();
+        //used to be 180 degrees
         return odo.getPosition().getHeading(AngleUnit.DEGREES) + 180;
     }
 
@@ -172,6 +212,8 @@ public class AutonomousDrive {
         odo.recalibrateIMU();
         opMode.sleep(500);
         odo.resetPosAndIMU();
+        opMode.sleep(400);
+        odo.setPosition(new Pose2D(DistanceUnit.INCH,8.5,36,AngleUnit.DEGREES, 180));
     }
 
     //Returns False if robot is not moving substantially
@@ -184,58 +226,113 @@ public class AutonomousDrive {
         return  !isMoving() && Math.abs(distanceToGo) < 1.75;
     }
 
-    public void goToPoint(double targetX, double targetY, double degrees){
+    public void goToPoint(double targetX, double targetY, double degrees) {
         // try switching from atan2 to atan
         //Get X and Y Distance and Total Distance
-        double targetXDistance = targetX - odo.getPosition().getX(DistanceUnit.INCH);
-        double targetYDistance = targetY - odo.getPosition().getY(DistanceUnit.INCH);
+        odo.update();
+        double targetYDistance = targetY - getY();
+        double targetXDistance = targetX - getX();
         double totalDistance = Math.hypot(targetYDistance, targetXDistance);
+        double starttotalDist = totalDistance;
         double angle = Math.atan2(targetYDistance, targetXDistance);
 
+
         //Get Heading
-        degrees = limitTurn(degrees);
+        degrees = (degrees >= 0) ? degrees % 360: (360 + (degrees % -360));
         double currentHeading = getHeading();
-        double angelTogo = degrees - currentHeading;
-        double powerTurning =  powerCurvingTurn(angelTogo);
-        double power = powerCurving(totalDistance);
-
-        double v1 = totalDistance * Math.sin(angle) + powerTurning; //lf // was cos
-        double v2 = totalDistance * Math.cos(angle) - powerTurning; //rf // was sin
-        double v3 = totalDistance * Math.cos(angle) + powerTurning; //lb // was sin
-        double v4 = totalDistance * Math.sin(angle) - powerTurning; //rb // was
-
-        while(totalDistance > this.errorTolerance){
-
-            targetXDistance = targetX - odo.getPosition().getX(DistanceUnit.INCH);
-            targetYDistance = targetY - odo.getPosition().getY(DistanceUnit.INCH);
-            totalDistance = Math.hypot(targetYDistance, targetXDistance);
-            angle = Math.atan2(targetYDistance, targetXDistance);
-
-
-            degrees = limitTurn(degrees);
-            currentHeading = getHeading();
-            angelTogo = degrees - currentHeading;
-            powerTurning =  powerCurving(angelTogo)/2;
-            power = powerCurving(totalDistance);
-
-
-            v1 = power * Math.sin(angle) + powerTurning; //lf // was cos
-            v2 = power * Math.cos(angle) - powerTurning; //rf // was sin
-            v3 = power * Math.cos(angle) + powerTurning; //lb // was sin
-            v4 = power * Math.sin(angle) - powerTurning; //rb // was
-
-            Robot.drive(v2,v4,v3,v1);
-
+        double totalangleTogo = degrees - currentHeading;
+        double startheading = getHeading();
+        double angleTogo = totalangleTogo;
+        currentHeading =  getHeading();
+        angleTogo = degrees - currentHeading;
+        if(Math.abs(angleTogo) > 180){
+            if(currentHeading < 180){
+                angleTogo = ((180-currentHeading) + degrees);
+            }else{
+                angleTogo = (degrees + (360 - currentHeading));
+            }
         }
+        double angleslope = angleTogo /totalDistance;
+        double slope = 90;
+        double min = .1;
+        double powerTurn;
+
+        double newdegree;
 
 
-        this.goToHeading(degrees);
+
+
+
+
+        double power;
+
+        double v1; //lf // was cos
+        double v2; //rf // was sin
+        double v3; //lb // was sin
+        double v4; //rb // was
+
+        while ((Math.abs(angleTogo) > 5 || Math.abs(targetYDistance) > this.errorTolerance + .025 || Math.abs(targetXDistance) > this.errorTolerance + .025 ) && opMode.opModeIsActive()) {
+            odo.update();
+
+
+            targetYDistance = (targetY - odo.getPosition().getY(DistanceUnit.INCH));
+            targetXDistance = (targetX - odo.getPosition().getX(DistanceUnit.INCH));
+            totalDistance = Math.hypot(targetYDistance, targetXDistance);
+            angle = Math.atan2(targetYDistance, targetXDistance) + Math.PI / 4 + Math.toRadians(getHeading());
+
+
+            currentHeading =  getHeading();
+
+            newdegree =  startheading + (angleslope * totalDistance);
+            angleTogo = newdegree - currentHeading;
+
+           if(Math.abs(angleTogo) > 180){
+               if(currentHeading < 180){
+                  angleTogo = ((180-currentHeading) + newdegree);
+              }else{
+                  angleTogo = (newdegree + (360 - currentHeading));
+                }
+          }
+
+
+           if(angleTogo > 0) {
+                powerTurn=  (angleTogo / slope < min) ? min : angleTogo / slope;
+           }else{
+               powerTurn =  (angleTogo / slope > -min) ? -min : angleTogo / slope;
+           }
+
+
+            power = powerCurvingOmni(totalDistance);
+
+
+            v1 = power * Math.sin(angle); //lf // was cos
+            v2 = power * Math.cos(angle); //rf // was sin
+            v3 = power * Math.cos(angle); //lb // was sin
+            v4 = power * Math.sin(angle); //rb // was
+
+
+            if (Math.abs(v1) > .01 && Math.abs(v1) < .15) v1 = Math.abs(v1) / v1 * .15;
+            if (Math.abs(v2) > .01 && Math.abs(v2) < .15) v2 = Math.abs(v1) / v1 * .15;
+            if (Math.abs(v3) > .01 && Math.abs(v3) < .15) v3 = Math.abs(v1) / v1 * .15;
+            if (Math.abs(v4) > .01 && Math.abs(v4) < .15) v4 = Math.abs(v1) / v1 * .15;
+
+
+            Robot.drive(v2 + (powerTurn), v4 + (powerTurn), v3 - (powerTurn), v1 - (powerTurn));
+
+            opMode.telemetry.addData("get x", getX());
+            opMode.telemetry.addData("get y", getY());
+            opMode.telemetry.addData("Target Heading: ", angle);
+
+            opMode.telemetry.addData("LF", v1);
+            opMode.telemetry.addData("RF", v2);
+            opMode.telemetry.addData("LB", v3);
+            opMode.telemetry.addData("RB", v4);
+            opMode.telemetry.update();
+        }
 
         Robot.drive(0,0,0,0);
 
-        opMode.sleep(250);
-
-
+        opMode.sleep(350);
     }
 
     public void goToPointConstantHeading(double targetX, double targetY){
@@ -255,7 +352,7 @@ public class AutonomousDrive {
         double v3; //lb // was sin
         double v4; //rb // was
 
-        while(Math.abs(targetYDistance) > this.errorTolerance && Math.abs(targetYDistance) > this.errorTolerance){
+        while(Math.abs(targetYDistance) > this.errorTolerance + .065 && Math.abs(targetYDistance) > this.errorTolerance + .065 && opMode.opModeIsActive()){
             odo.update();
 
             if(isStuck(totalDistance))return;
@@ -263,7 +360,7 @@ public class AutonomousDrive {
             targetYDistance = (targetY - odo.getPosition().getY(DistanceUnit.INCH));
             targetXDistance = (targetX - odo.getPosition().getX(DistanceUnit.INCH));
             totalDistance = Math.hypot(targetYDistance, targetXDistance);
-            angle = Math.atan2(targetYDistance, targetXDistance) + Math.PI/4;
+            angle = Math.atan2(targetYDistance, targetXDistance) + Math.PI/4 + Math.toRadians(getHeading());
 
 
             power = powerCurvingOmni(totalDistance);
@@ -274,16 +371,23 @@ public class AutonomousDrive {
             v3 = power * Math.cos(angle); //lb // was sin
             v4 = power * Math.sin(angle); //rb // was
 
+
+            if(Math.abs(v1) > .01 && Math.abs(v1) < .15) v1 = Math.abs(v1)/v1 * .2;
+            if(Math.abs(v2) > .01 && Math.abs(v2) < .15) v2 = Math.abs(v1)/v1 * .2;
+            if(Math.abs(v3) > .01 && Math.abs(v3) < .15) v3 = Math.abs(v1)/v1 * .2;
+            if(Math.abs(v4) > .01 && Math.abs(v4) < .15) v4 = Math.abs(v1)/v1 * .2;
+
+            if (v1 > 0 && v4 > 0 && v2 < 0 && v3 < 0){
+                v1 += .175;
+                v4 += .175;
+            } else if (v1 < 0 && v4 < 0 && v2 > 0 && v3 > 0){
+                v2 += .175;
+                v3 += .175;
+            }
+
             Robot.drive(v2,v4,v3,v1);
 
-            opMode.telemetry.addData("get x", getX());
-            opMode.telemetry.addData("get y", getY());
-
-            opMode.telemetry.addData("LF", v1);
-            opMode.telemetry.addData("RF", v2);
-            opMode.telemetry.addData("LB", v3);
-            opMode.telemetry.addData("RB", v4);
-            opMode.telemetry.update();
+            outputDriveInfo(totalDistance, totalDistance, v1);
         }
 
 
@@ -291,7 +395,7 @@ public class AutonomousDrive {
 
         Robot.drive(0,0,0,0);
 
-        opMode.sleep(250);
+        opMode.sleep(150);
 
 
 
@@ -303,13 +407,18 @@ public class AutonomousDrive {
 
 
     public void outputDriveInfo(double distanceToGo, double distanceTotal, double power){
-        opMode.telemetry.addData("distanceToGo", distanceToGo);
-        opMode.telemetry.addData("distanceTotal", distanceTotal);
-        opMode.telemetry.addData("power", power);
-//        opMode.telemetry.addData("get x", this.getX());
-//        opMode.telemetry.addData("get y", this.getY());
-        opMode.telemetry.addData("heading ", odo.getPosition().getHeading(AngleUnit.DEGREES));
-        opMode.telemetry.addData("is moving", isMoving());
+//        opMode.telemetry.addData("distanceToGo", distanceToGo);
+//        opMode.telemetry.addData("distanceTotal", distanceTotal);
+//        opMode.telemetry.addData("power", power);
+////        opMode.telemetry.addData("get x", this.getX());
+////        opMode.telemetry.addData("get y", this.getY());
+//        opMode.telemetry.addData("heading ", odo.getPosition().getHeading(AngleUnit.DEGREES));
+//        opMode.telemetry.addData("is moving", isMoving());
+//        opMode.telemetry.update();
+        opMode.telemetry.addData("get x", this.getX());
+        opMode.telemetry.addData("get y", this.getY());
+        opMode.telemetry.addData("v1 power", power);
+        opMode.telemetry.addData("total distance", distanceToGo);
         opMode.telemetry.update();
     }
 

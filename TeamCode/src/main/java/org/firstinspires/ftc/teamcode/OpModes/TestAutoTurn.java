@@ -13,11 +13,17 @@ public class TestAutoTurn extends LinearOpMode {
         initAll(this);
         waitForStart();
 
+        int angle = 36;
 
-        ad.goToHeading(90);
-        ad.goToHeading( 0);
-        ad.goToHeading( 270);
-        ad.goToHeading( 180);
+        while(opModeIsActive()){
+            ad.goToHeading2(0);
+            ad.goToHeading2(angle);
+            ad.goToHeading2(0);
+            ad.goToHeading2(-angle);
+            angle += 36;
+
+
+        }
 
         while(opModeIsActive()) {
 //            telemetry.addData("Distance Gone X", ad.getX());

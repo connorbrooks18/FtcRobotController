@@ -113,7 +113,7 @@ public class Robot {
         if((c.options && !prevC.options) || (c.options2 && !prevC.options2)){
             gearprev = (gearprev == slow) ? fast : slow;
         }
-        gear = (intake.getCurrentHPos() > 500) ? slow : gearprev;
+        gear = (intake.getCurrentHPos() > 500 || outtake.getVSlidePos() > outtake.touchBarSlidePos) ? slow : gearprev;
         //gear = (outtake.getVSlidePos() > outtake.touchBarSlidePos) ? slow : gearprev;
 
         return gear;
