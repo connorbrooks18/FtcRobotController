@@ -30,6 +30,10 @@ public class Intake {
     public double tsUp = .71; // position that dumps the sample
     public double tsTarget = tsMiddle;
 
+    public int slideOut = 2400;
+    public int slideForceIn = -100;
+
+
 
     public Intake(OpMode opMode){
         hslide = opMode.hardwareMap.get(DcMotor.class, "hslide");
@@ -37,8 +41,8 @@ public class Intake {
         wheelServo = opMode.hardwareMap.get(Servo.class, "servoWheelBlue");
         transferServo = opMode.hardwareMap.get(Servo.class, "servoTransferWhite");
 
-//        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
-//        ds = (DistanceSensor)cs;
+        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
+        ds = (DistanceSensor)cs;
 
         hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslidelimit");
         hslide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -99,15 +103,15 @@ public class Intake {
 
 
 
-//    public SampleColor getColor(){
-//        if(cs.red() > 100) return SampleColor.RED;
-//        if(cs.blue() > 100) return SampleColor.BLUE;
-//        return SampleColor.YELLOW;
-//    }
-//
-//    public boolean detectSample(){
-//        return (ds.getDistance(DistanceUnit.MM) < 15);
-//    }
+    public SampleColor getColor(){
+        if(cs.red() > 100) return SampleColor.RED;
+        if(cs.blue() > 100) return SampleColor.BLUE;
+        return SampleColor.YELLOW;
+    }
+
+    public boolean detectSample(){
+        return (ds.getDistance(DistanceUnit.MM) < 15);
+    }
 
 
 

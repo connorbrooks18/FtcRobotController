@@ -11,6 +11,11 @@ public class ExampleAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initAll(this);
+        outtake.stopVSlide();
+        outtake.setBucketPos(outtake.bucketRegPos);
+        intake.tsTarget = intake.tsMiddle;
+        intake.setTransferServo();
+
         waitForStart();
         telemetry.addData("startx", ad.getX());
         telemetry.addData("starty", ad.getY());

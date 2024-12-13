@@ -21,7 +21,7 @@ public class Outtake {
     //Vars for Slide Positions
     public int bottomSlidePos = 0;
     public int highBucketSlidePos = 4050; //temp value
-    public int lowBucketSlidePos = 2300; //temp value
+    public int lowBucketSlidePos = 2100; //temp value
     public int touchBarSlidePos = (lowBucketSlidePos / 2) - 100;
     public final int V_SLIDE_MAX = 4375;
     public int targetPos = bottomSlidePos;
