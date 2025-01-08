@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Robot.*;
 
 import org.firstinspires.ftc.teamcode.AutonomousDrive;
 import org.firstinspires.ftc.teamcode.IMUControl;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.openftc.easyopencv.OpenCvCamera;
 
 @TeleOp(name = "TelopTest")
@@ -63,6 +64,8 @@ public class TeleopTest extends LinearOpMode {
                 outtake.vslideToPow(0);
             }
             outtake.setBucketPos(c.RTrigger2);
+
+            Robot.rcDrivingFC();
 
 
 

@@ -32,11 +32,11 @@ public class LeftThreeWTurning extends LinearOpMode {
         goAndIntakeAndTransfer(3);
 
 
-        goAndScore(false, false);
+        goAndScore(true, false);
         goAndIntakeAndTransfer(1);
 
 
-        goAndScore(false, false);
+        goAndScore(true, false);
 
 
 
@@ -44,7 +44,7 @@ public class LeftThreeWTurning extends LinearOpMode {
 
 
     }
-
+    //Method Drives Robot to Bucket and Dumps Sample
     public void goAndScore(boolean high, boolean goToPos){
         //Going to Bucket with Sample
         if(high) {
@@ -56,13 +56,13 @@ public class LeftThreeWTurning extends LinearOpMode {
         if(goToPos) {
             ad.goToPointConstantHeading(15, 14);
         }
-        ad.goToHeading2(315);
+        ad.goToHeading(315);
 
         if(high && !goToPos){
             sleep(750);
         }
         outtake.setBucketPos(outtake.bucketOutPos);
-        sleep(750);
+        sleep(1000);
 
 
         outtake.setBucketPos(outtake.bucketRegPos);
@@ -71,36 +71,13 @@ public class LeftThreeWTurning extends LinearOpMode {
 
     }
 
-
-    public void goAndIntakeAndTransfer(int sample){ // sample is 1, 2, 3 (left to right)
-        //Line Up With Floor Sample
-
-//        double cur_x = ad.getY();
-//        double cur_y = ad.getX();
-//        double to_x = 0;
-//        double to_y = 0;
-//        switch (sample) {
-//            case 1:
-//                to_x = 3; // 3, 46
-//                to_y = 46;
-//                break;
-//            case 2:
-//                to_x = 13;
-//                to_y = 46;
-//                // 13, 46
-//
-//                break;
-//            case 3:
-//                to_x = 23;
-//                to_y = 46;
-//                // 23, 46
-//                break;
-//        }
-//        double angle = Math.toDegrees(Math.atan2((to_y - cur_y), (to_x - cur_x)));
+    //Robot Collects Inputted Sample (Left = 1, Middle = 2, Right = 3)
+    public void goAndIntakeAndTransfer(int sample){
+        //
         double angle = 0;
         switch (sample) {
             case 1:
-                angle = 22.5;
+                angle = 25;
                 break;
             case 2:
                 angle = 5;
@@ -110,24 +87,29 @@ public class LeftThreeWTurning extends LinearOpMode {
                 break;
         }
         intake.runWheels(true);
-        // start hslide slowly
-        intake.hslideToPos(intake.slideOut, .4);
+        //Start HSlide Slowly
+        intake.hslideToPos(intake.slideOut, 1);
+        //(for finley to understand) allows us to start moving the transfer servo mid movement to save time
+        intake.tsTarget = .25;//intake.tsDown;
+        intake.setTransferServo();
+
         ad.goToHeading(angle);
+        //, 180, () -> {intake.tsTarget = intake.tsDown; intake.setTransferServo();});
 
 
         //Put Intake Down
         intake.tsTarget = intake.tsDown;
         intake.setTransferServo();
 
-        // speed up hslide once done turning
+        //Speed up HSlide after turn
         intake.hslideToPos(intake.slideOut, .75);
 
 
         //Turn Active Intake On
         if(sample != 2) {
-            sleep(1600);
+            sleep(750);
         } else {
-            sleep(1250);
+            sleep(500);
         }
 
 
@@ -148,7 +130,7 @@ public class LeftThreeWTurning extends LinearOpMode {
         for(int i = 0; i < 2; i++) {
             intake.tsTarget = intake.tsUp;
             intake.setTransferServo();
-            sleep(300);
+            sleep(500);
             intake.tsTarget = intake.tsMiddle;
             intake.setTransferServo();
             sleep(150);
@@ -160,7 +142,3 @@ public class LeftThreeWTurning extends LinearOpMode {
 
     }
 }
-
-//shimmy thing or hitting wall stopping it from tilting bucket
-//did not align with bucket after trying to pick up second sample
-//did not align with right-side sample too far right

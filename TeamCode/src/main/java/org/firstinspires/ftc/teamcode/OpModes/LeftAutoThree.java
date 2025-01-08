@@ -49,7 +49,7 @@ public class LeftAutoThree extends LinearOpMode {
             outtake.vslideToPos(outtake.lowBucketSlidePos, outtake.slidePower);
         }
         ad.goToPointConstantHeading(15, 15);
-        ad.goToHeading2(315);
+        ad.goToHeading(315);
 
         //Dump Sample
         ad.forward(-3);
@@ -66,7 +66,7 @@ public class LeftAutoThree extends LinearOpMode {
 
     public void goAndIntakeAndTransfer(int sample){ // sample is 1, 2, 3 (left to right)
         //Line Up With Floor Sample
-        ad.goToHeading2(0);
+        ad.goToHeading(0);
         ad.goToPointConstantHeading(25.5,12 + (sample-2) * 10);
 
         //Put Intake Down

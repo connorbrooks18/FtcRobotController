@@ -30,11 +30,15 @@ public class Outtake {
     public double slidePower = 1; //temp value
 
     //Vars for Bucket Dumping Positions
-    public double bucketAutoTouch = 0.0;
-    public double bucketOutPos = 0.225; //temp value (prev 0.6)
-    public double bucketRegPos = 0.635; //temp value (prev 0.3)
+    public double bucketOutPos = 0.3;
+    public double bucketRegPos = 0.7;
 
     public double targetBucketPos = bucketRegPos;
+
+    //Vars for specimen claw
+    public double clawOpen = 1;
+    public double clawClose = 0;
+
 
 
 
@@ -42,7 +46,7 @@ public class Outtake {
     public Outtake(OpMode opMode){
         vslide = opMode.hardwareMap.get(DcMotor.class, "vslide");
         bucket = opMode.hardwareMap.get(Servo.class, "bucket");
-//        claw = opMode.hardwareMap.get(Servo.class, "claw");
+        claw = opMode.hardwareMap.get(Servo.class, "claw");
         vslideBottom = opMode.hardwareMap.get(TouchSensor.class, "vslidelimit");
 
         vslide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -93,6 +97,19 @@ public class Outtake {
             vslide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             vslide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+    }
+
+    public void openClaw(){
+        claw.getController().pwmEnable();
+        claw.setPosition(clawOpen);
+    }
+
+    public void closeClaw(){
+        claw.getController().pwmDisable();
+        claw.setPosition(clawClose);
+    }
+    public void killClaw(){
+        claw.getController().pwmDisable();
     }
 
 

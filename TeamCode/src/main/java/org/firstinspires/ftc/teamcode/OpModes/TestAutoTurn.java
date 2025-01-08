@@ -16,10 +16,10 @@ public class TestAutoTurn extends LinearOpMode {
         int angle = 36;
 
         while(opModeIsActive()){
-            ad.goToHeading2(0);
-            ad.goToHeading2(angle);
-            ad.goToHeading2(0);
-            ad.goToHeading2(-angle);
+            ad.goToHeading(0);
+            ad.goToHeading(angle);
+            ad.goToHeading(0);
+            ad.goToHeading(-angle);
             angle += 36;
 
 

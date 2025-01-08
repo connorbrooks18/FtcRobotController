@@ -23,11 +23,11 @@ public class Intake {
 
     //Vars
     double inSlidePos = 0;
-    double hSlideMax = 1800;
+    double hSlideMax = 2400;
 
     public double tsDown = .20; //
     public double tsMiddle = .575;
-    public double tsUp = .71; // position that dumps the sample
+    public double tsUp = tsMiddle;//.71; // position that dumps the sample
     public double tsTarget = tsMiddle;
 
     public int slideOut = 2400;
@@ -89,7 +89,7 @@ public class Intake {
 
 
     public void runWheels(boolean in){
-        wheelServo.setPosition(in ? 0 : 1);
+        wheelServo.setPosition(in ? 1 : 0);
 
     }
     public void stopWheels(){
