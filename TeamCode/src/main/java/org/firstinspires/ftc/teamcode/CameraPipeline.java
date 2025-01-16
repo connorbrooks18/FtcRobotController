@@ -83,6 +83,7 @@ public class CameraPipeline extends OpenCvPipeline {
 
 
         coneAreaArray = getContourArea(mat);
+        telemetry.addData("List: ",getContourArea(mat));
 
 
 
@@ -113,11 +114,11 @@ public class CameraPipeline extends OpenCvPipeline {
 
 
 
-    public int findTarget(List<Integer> list){
+    public double findTarget(List<Double> list){
         if(list.size() == 0){return 0;}
 
 
-        int pos = list.get(0);
+        double pos = list.get(0);
         int index = 0;
         for(int i = 1; i < list.size(); i++){
            if( list.get(i) > pos){

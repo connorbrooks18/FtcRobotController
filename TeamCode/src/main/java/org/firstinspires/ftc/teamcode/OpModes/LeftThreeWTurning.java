@@ -34,13 +34,10 @@ public class LeftThreeWTurning extends LinearOpMode {
 
         goAndScore(true, false);
 
-        ad.goToHeading(0);
-        ad.goToPointConstantHeading(ad.getX() + 10, ad.getY());
         goAndIntakeAndTransfer(1);
 
 
-        goAndScore(true, true);
-
+        goAndScore(true, false);
 
     }
     //Method Drives Robot to Bucket and Dumps Sample
@@ -108,9 +105,9 @@ public class LeftThreeWTurning extends LinearOpMode {
 
         //Turn Active Intake On
         if(sample == 1) {
-            sleep(850);
+            sleep(650);
         } else {
-            sleep(850);
+            sleep(650);
         }
 
 
@@ -120,10 +117,10 @@ public class LeftThreeWTurning extends LinearOpMode {
         intake.stopWheels();
 
         intake.hslideToPos(intake.slideForceIn, 1);
-        sleep(800);
+        sleep(1200);
 
         //Transfer Sample
-        intake.runWheels(true, true);
+        intake.runWheels(true);
 
         sleep(1250);
 
