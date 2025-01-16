@@ -33,14 +33,13 @@ public class LeftThreeWTurning extends LinearOpMode {
 
 
         goAndScore(true, false);
+
+        ad.goToHeading(0);
+        ad.goToPointConstantHeading(ad.getX() + 10, ad.getY());
         goAndIntakeAndTransfer(1);
 
 
-        goAndScore(true, false);
-
-
-
-
+        goAndScore(true, true);
 
 
     }
@@ -54,19 +53,21 @@ public class LeftThreeWTurning extends LinearOpMode {
         }
 
         if(goToPos) {
-            ad.goToPointConstantHeading(15, 14);
+            ad.goToHeading(0);
+            ad.goToPointConstantHeading(14.25, 13.5);
         }
         ad.goToHeading(315);
+        intake.stopWheels();
 
         if(high && !goToPos){
-            sleep(750);
+            sleep(1100);
         }
         outtake.setBucketPos(outtake.bucketOutPos);
-        sleep(1000);
+        sleep(1100);
 
 
         outtake.setBucketPos(outtake.bucketRegPos);
-        sleep(500);
+        sleep(400);
         outtake.vslideToPos(outtake.bottomSlidePos, outtake.slidePower);
 
     }
@@ -77,39 +78,39 @@ public class LeftThreeWTurning extends LinearOpMode {
         double angle = 0;
         switch (sample) {
             case 1:
-                angle = 25;
+                angle = 20;
                 break;
             case 2:
                 angle = 5;
                 break;
             case 3:
-                angle = 345;
+                angle = 346;
                 break;
         }
         intake.runWheels(true);
         //Start HSlide Slowly
-        intake.hslideToPos(intake.slideOut, 1);
-        //(for finley to understand) allows us to start moving the transfer servo mid movement to save time
-        intake.tsTarget = .25;//intake.tsDown;
+        intake.hslideToPos(intake.slideOut+100, .75);
+        //allows us to start moving the transfer servo mid movement to save time
+        intake.tsTarget = .325;//intake.tsDown;
+
         intake.setTransferServo();
 
-        ad.goToHeading(angle);
+        ad.goToHeadingEvent(angle, 10, ()->{intake.tsTarget = intake.tsDown; intake.setTransferServo();});
         //, 180, () -> {intake.tsTarget = intake.tsDown; intake.setTransferServo();});
 
-
-        //Put Intake Down
-        intake.tsTarget = intake.tsDown;
-        intake.setTransferServo();
-
         //Speed up HSlide after turn
-        intake.hslideToPos(intake.slideOut, .75);
+        intake.hslideToPos(intake.slideOut+100, 1);
+
+
+
+
 
 
         //Turn Active Intake On
-        if(sample != 2) {
-            sleep(750);
+        if(sample == 1) {
+            sleep(850);
         } else {
-            sleep(500);
+            sleep(850);
         }
 
 
@@ -119,23 +120,15 @@ public class LeftThreeWTurning extends LinearOpMode {
         intake.stopWheels();
 
         intake.hslideToPos(intake.slideForceIn, 1);
-        if(sample != 2){
-            sleep(1000);
-        } else {
-            sleep(750);
-        }
+        sleep(800);
 
         //Transfer Sample
-        intake.runWheels(true);
-        for(int i = 0; i < 2; i++) {
-            intake.tsTarget = intake.tsUp;
-            intake.setTransferServo();
-            sleep(500);
-            intake.tsTarget = intake.tsMiddle;
-            intake.setTransferServo();
-            sleep(150);
-        }
-        intake.stopWheels();
+        intake.runWheels(true, true);
+
+        sleep(1250);
+
+
+        //intake.stopWheels();
         intake.hslideToPow(0);
 
 

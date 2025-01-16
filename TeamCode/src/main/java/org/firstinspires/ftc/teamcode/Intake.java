@@ -25,8 +25,8 @@ public class Intake {
     double inSlidePos = 0;
     double hSlideMax = 2400;
 
-    public double tsDown = .20; //
-    public double tsMiddle = .575;
+    public double tsDown = .17; //
+    public double tsMiddle = .5;
     public double tsUp = tsMiddle;//.71; // position that dumps the sample
     public double tsTarget = tsMiddle;
 
@@ -41,8 +41,8 @@ public class Intake {
         wheelServo = opMode.hardwareMap.get(Servo.class, "servoWheelBlue");
         transferServo = opMode.hardwareMap.get(Servo.class, "servoTransferWhite");
 
-        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
-        ds = (DistanceSensor)cs;
+//        cs = opMode.hardwareMap.get(ColorSensor.class, "csi");
+//        ds = (DistanceSensor)cs;
 
         hslideBottom = opMode.hardwareMap.get(TouchSensor.class, "hslidelimit");
         hslide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -89,8 +89,12 @@ public class Intake {
 
 
     public void runWheels(boolean in){
-        wheelServo.setPosition(in ? 1 : 0);
-
+        wheelServo.setPosition(in ? 0 : 1);
+    }
+    public void runWheels(boolean in, boolean slow){
+        double dir = in ? 0 : 1;
+//        double power = slow ? (5*dir + .5)/6 : dir;
+        wheelServo.setPosition(dir);
     }
     public void stopWheels(){
         wheelServo.setPosition(.5);

@@ -1,6 +1,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -25,12 +27,12 @@ public class CameraPipeline extends OpenCvPipeline {
     public Scalar[] currentBounds = blueBounds;
 
     Telemetry telemetry;
-    private Rect rectCrop = new Rect(0, 0, 320, 240);
+    public Rect rectCrop = new Rect(0, 0, 320, 240);
     Mat mat = new Mat();
     Mat mat2 = new Mat();
     Date date = new Date();
     Mat image;
-    List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+
 
     //color side
     int fieldColor = 1;
@@ -44,23 +46,25 @@ public class CameraPipeline extends OpenCvPipeline {
         MIDDLE_SIDE,
         RIGHT_SIDE
     }
-    private int rectX = 0;
+    public int rectX = 0;
     //This is the enum that is used throughout the pipeline (lowercase variable)
     //It is type 'Side' (as opposed to a long or boolean)
-    private static Side side = Side.RIGHT_SIDE;
+    public static Side side = Side.RIGHT_SIDE;
 
     //HSV color parameters, determine w/ Python live update program
-    private int hueMin = 0; //84
-    private int hueMax = 170; //122
-    private int satMin = 78; //88
+    private int hueMin = 105; //84
+    private int hueMax = 142; //122
+    private int satMin = 106; //88
     private int satMax = 255;
-    private int valMin = 0; //30
+    private int valMin = 47; //30
     private int valMax = 255;
     private ArrayList<Double> coneAreaArray;
     private ArrayList<Mat> conarr = new ArrayList<Mat>();
     static double PERCENT_COLOR_THRESHOLD = 0.4;
 
-    public CameraPipeline(Telemetry t, int isRed, int isPark) { telemetry = t; fieldColor = isRed; park = isPark; }
+    private ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+
+    public CameraPipeline(Telemetry t) { telemetry = t;}
     //We use EasyOpenCv, but the docs for what this does will be OpenCv docs
     @Override
     public Mat processFrame(Mat input) {
@@ -68,34 +72,116 @@ public class CameraPipeline extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
 
+        //the range of colors to filter.
+        Scalar lowHSV = new Scalar(hueMin, satMin, valMin);
+        Scalar highHSV = new Scalar(hueMax, satMax, valMax);
 
-        Core.inRange(mat, currentBounds[0], currentBounds[1], mat);
+        Core.inRange(mat, lowHSV, highHSV, mat);
 
         Imgproc.findContours(mat, contours, mat2, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_NONE);
+
+
+
         coneAreaArray = getContourArea(mat);
 
 
-//        telemetry.addData("Contour area: ", getContourArea(mat));
-//        telemetry.addData("stack size: ", getConeArea());
-//        telemetry.addData("Contours", conarr.size());
+
+
+
+
+
+        telemetry.addData("Contours", conarr.size());
+        telemetry.update();
+
 //        telemetry.addData("SIDE ", (fieldColor == 0)?"BLUE":"RED");
-//        telemetry.addData("Park? ", (park == 0)?"No Park":"Do Park");
+//        telemetry.addData("Park? ", (park == 0)?"No Park":"Do♦ Park");
 //        telemetry.update();
 
-        return input;
+        return image;
     }
+
+
 
     public Side getSide() {return side;}
     public int getrectX(){return rectX;}
 
 
 
-    private ArrayList<Double> getContourArea(Mat mat) {
-        Mat hierarchy = new Mat();
+
+
+
+
+
+
+    public int findTarget(List<Integer> list){
+        if(list.size() == 0){return 0;}
+
+
+        int pos = list.get(0);
+        int index = 0;
+        for(int i = 1; i < list.size(); i++){
+           if( list.get(i) > pos){
+               index = i;
+               pos = list.get(i);
+           }
+        }
+
+        return list.get(index);
+    }
+
+
+
+    /*private List<Integer> getContours(Mat mat){
         image = mat.clone();
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
-        Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        conarr.clear();
+
+
+        telemetry.update();
+
+        double minArea = 50;
+        for (int i = 0; i < contours.size(); i++) {
+            Mat contour = contours.get(i);
+            int contourArea = Imgproc.boundingRect(contour).y;
+            //Add any contours bigger than error size (ignore tiny bits) to array of all contours
+            if(contourArea > minArea){
+                arr.add(contourArea);
+                conarr.add(contour);
+                Rect bounding = Imgproc.boundingRect(contour);
+                //Draw a rectangle on preview stream
+                Imgproc.rectangle(image, bounding, new Scalar(80,80,80), 4);
+            }
+        }
+
+
+        //side = getConeArea();
+
+
+        return arr;
+
+
+    }
+
+    /*public void gotoSpecimen(OpMode opMode){
+
+    }
+
+     */
+
+
+
+
+
+
+
+    private ArrayList<Double> getContourArea(Mat mat) {
+
+        image = mat.clone();
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+
 
         ArrayList<Double> arr = new ArrayList<Double>();
         conarr.clear();
@@ -118,10 +204,12 @@ public class CameraPipeline extends OpenCvPipeline {
         }
 
 
-        side = getConeArea();
+        //side = getConeArea();
 
         return arr;
     }
+
+
 
     private Side getConeArea() {
         int biggestContour = 0;
@@ -166,5 +254,7 @@ public class CameraPipeline extends OpenCvPipeline {
         return fieldColor;
     }
     public void Park(int isPark){ park = isPark;}
+
+
 
 }

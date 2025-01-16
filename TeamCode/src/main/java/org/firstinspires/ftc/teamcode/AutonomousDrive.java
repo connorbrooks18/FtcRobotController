@@ -37,7 +37,6 @@ public class AutonomousDrive {
         ((LinearOpMode)opMode).sleep(250);
 
 
-
     }
 
     public void forward(double distanceTotal) {
@@ -174,10 +173,51 @@ public class AutonomousDrive {
         Robot.drive(0, 0, 0, 0);
         opMode.sleep(150);
     }
+
+    public void goToHeadingEndEvent(double degrees, event ev){
+        boolean haveEvented = false;
+        if(degrees < 0) {
+            degrees = (360 + (degrees % -360));
+        }else{
+            degrees = degrees % 360;
+        }
+        double currentHeading = getHeading();
+        double angleTogo = degrees - currentHeading;
+        while(opMode.opModeIsActive() && Math.abs(angleTogo) > .5){
+            currentHeading =  getHeading();
+
+            angleTogo = degrees - currentHeading;
+
+
+
+            if(Math.abs(angleTogo) > 180){
+                if(currentHeading < 180){
+                    angleTogo = -((currentHeading) + (360 - degrees));
+                }else{
+                    angleTogo = (degrees + (360 - currentHeading));
+                }
+            }
+
+            double power =  powerCurvingTurn(angleTogo);
+
+            Robot.drive(power, power, -power, -power);
+
+
+
+            opMode.telemetry.addData("Current Heading", currentHeading);
+            opMode.telemetry.addData("Angle To go", angleTogo);
+            opMode.telemetry.update();
+
+        }
+        Robot.drive(0, 0, 0, 0);
+        ev.run();
+        opMode.sleep(150);
+    }
+
     public static double powerCurving(double distanceToGo){
         double slope = 18;
         double max = .80;
-        double min = .175;
+        double min = .2;
         if(distanceToGo > 0) {
             return Math.max(Math.min(distanceToGo / slope, max), min);
         } else {

@@ -1,11 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
 public class Robot {
@@ -40,7 +47,9 @@ public class Robot {
     public static IMUControl imu;
     //public static AprilTagPipeline aptag;
 
+
     public static boolean foundBottom = false;
+
 
 
     public static void initDrive(OpMode opmode) {
@@ -90,6 +99,10 @@ public class Robot {
 
         ad = new AutonomousDrive((LinearOpMode) opMode);
 
+        //Camera
+
+
+
         //aptag = new AprilTagPipeline((LinearOpMode) opMode);
 
     }
@@ -115,7 +128,7 @@ public class Robot {
         if((c.options && !prevC.options) || (c.options2 && !prevC.options2)){
             gearprev = (gearprev == slow) ? fast : slow;
         }
-        gear = (intake.getCurrentHPos() > 500 || outtake.getVSlidePos() > outtake.touchBarSlidePos) ? slow : gearprev;
+        gear = (intake.getCurrentHPos() > 500 || (outtake.vslide.getTargetPosition() > outtake.lowBucketSlidePos && outtake.getVSlidePos() > outtake.lowBucketSlidePos)) ? slow : gearprev;
         //gear = (outtake.getVSlidePos() > outtake.touchBarSlidePos) ? slow : gearprev;
 
         return gear;
@@ -350,11 +363,13 @@ public class Robot {
                 //intake.tsTarget = intake.tsMiddle;
                 outtake.targetPos = outtake.lowBucketSlidePos;
             } else if (c.dpadDown2) {
+                outtake.killClaw();
                 //intake.tsTarget = intake.tsMiddle;
-//                outtake.killClaw();
+                outtake.killClaw();
                 outtake.targetPos = outtake.bottomSlidePos; //timing will need testing
             } else if (c.dpadRight2) {
                 //intake.tsTarget = intake.tsMiddle;
+                outtake.killClaw();
                 outtake.targetPos = outtake.touchBarSlidePos;
             }
 
@@ -382,9 +397,11 @@ public class Robot {
         }
 
         if(c.a2){
-            outtake.killClaw();
+            outtake.closeClaw();
         } else if(c.b2){
             outtake.openClaw();
+        } else if(c.x2){
+            outtake.killClaw();
         }
 
         outtake.setBucketPos(outtake.targetBucketPos);

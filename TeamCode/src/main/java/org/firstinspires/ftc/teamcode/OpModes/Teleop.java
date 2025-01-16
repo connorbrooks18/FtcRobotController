@@ -56,10 +56,10 @@ public class Teleop extends LinearOpMode {
 
 
             telemetry.addData("intake slide pos", intake.getCurrentHPos());
-            telemetry.addData("color r", intake.cs.red());
-            telemetry.addData("color g", intake.cs.green());
-            telemetry.addData("color b", intake.cs.blue());
-            telemetry.addData("avg", (intake.cs.red() + intake.cs.green() + intake.cs.blue())/3.0);
+//            telemetry.addData("color r", intake.cs.red());
+//            telemetry.addData("color g", intake.cs.green());
+//            telemetry.addData("color b", intake.cs.blue());
+//            telemetry.addData("avg", (intake.cs.red() + intake.cs.green() + intake.cs.blue())/3.0);
             telemetry.update();
 
 

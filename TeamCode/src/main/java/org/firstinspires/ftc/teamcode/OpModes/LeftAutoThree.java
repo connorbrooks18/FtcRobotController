@@ -8,7 +8,7 @@ import static org.firstinspires.ftc.teamcode.Robot.outtake;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous (name="Left Three Auto", preselectTeleOp="Telop")
+//@Autonomous (name="Left Three Auto", preselectTeleOp="Telop")
 public class LeftAutoThree extends LinearOpMode {
 
 

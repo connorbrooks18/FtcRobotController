@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import static org.firstinspires.ftc.teamcode.Robot.*;
 
-@Autonomous (name="ex. auto")
+//@Autonomous (name="ex. auto")
 public class ExampleAuto extends LinearOpMode {
 
 

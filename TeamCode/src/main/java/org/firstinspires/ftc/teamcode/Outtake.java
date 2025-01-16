@@ -21,8 +21,8 @@ public class Outtake {
     //Vars for Slide Positions
     public int bottomSlidePos = 0;
     public int highBucketSlidePos = 4050; //temp value
-    public int lowBucketSlidePos = 2100; //temp value
-    public int touchBarSlidePos = (lowBucketSlidePos / 2) - 100;
+    public int lowBucketSlidePos = 2250; //temp value
+    public int touchBarSlidePos = 400;
     public final int V_SLIDE_MAX = 4375;
     public int targetPos = bottomSlidePos;
 
@@ -105,7 +105,7 @@ public class Outtake {
     }
 
     public void closeClaw(){
-        claw.getController().pwmDisable();
+        claw.getController().pwmEnable();
         claw.setPosition(clawClose);
     }
     public void killClaw(){
