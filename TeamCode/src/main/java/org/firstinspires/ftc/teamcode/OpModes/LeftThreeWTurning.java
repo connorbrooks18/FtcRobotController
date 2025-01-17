@@ -122,7 +122,7 @@ public class LeftThreeWTurning extends LinearOpMode {
         //Transfer Sample
         intake.runWheels(true);
 
-        sleep(1250);
+        sleep(1000);
 
 
         //intake.stopWheels();

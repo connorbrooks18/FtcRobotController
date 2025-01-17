@@ -31,7 +31,7 @@ public class Outtake {
 
     //Vars for Bucket Dumping Positions
     public double bucketOutPos = 0.3;
-    public double bucketRegPos = 0.7;
+    public double bucketRegPos = 0.65;
 
     public double targetBucketPos = bucketRegPos;
 
